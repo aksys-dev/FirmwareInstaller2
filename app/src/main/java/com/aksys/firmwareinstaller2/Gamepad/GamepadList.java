@@ -19,6 +19,8 @@ public class GamepadList {
 		return ourInstance;
 	}
 	
+	public static int SET_FW_ID = -1;
+	
 	ArrayList<GamepadInfo> GAMEPAD_LIST;
 	
 	private GamepadList() {

@@ -26,6 +26,7 @@ import com.aksys.firmwareinstaller2.Gamepad.GamepadInfo;
 import com.aksys.firmwareinstaller2.Gamepad.GamepadList;
 
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadInfo.TYPE_AKS_BT;
+import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
 
 
 public class FirmwareUpdateActivity extends AppCompatActivity implements GamepadEvent {
@@ -160,6 +161,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
+					SET_FW_ID = -1;
 					finish();
 				}
 			} );
@@ -289,6 +291,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			builder.setNegativeButton( android.R.string.cancel, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					SET_FW_ID = -1;
 					dialog.dismiss();
 					CancelUpdate();
 				}
@@ -322,7 +325,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			builder.setIcon( R.drawable.ic_download );
 			builder.setTitle( R.string.firmware_update );
 			builder.setMessage(String.format(getString(R.string.firmware_update_completed_desc),gamepad.getGamepadName(),gamepad.getFirmware()));
-			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+			builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					gamepad.onDisconnectGamepad();
@@ -331,7 +334,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 					GamepadList.getInstance().checkList();
 					finish();
 				}
-			} );
+			});
 			alertDialog = builder.create();
 			alertDialog.show();
 		}

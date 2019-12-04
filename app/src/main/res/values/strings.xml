@@ -109,7 +109,7 @@
     <string name="text_show_bluetooth">Bluetooth Settings</string>
     <string name="gamepad_windows_mode">Windows Mode</string>
     <string name="title_no_gamepad">No Gamepad</string>
-    <string name="firmware_update_completed_desc">The firmware update is complete.\nGamepad Name: %s\nInstalled Firmware: %s\nPress OK to unpair the gamepad.</string>
+    <string name="firmware_update_completed_desc">The firmware update is complete.\nGamepad Name: %s\nInstalled Firmware: %s\nPress CLOSE to unpair the gamepad.</string>
     <string name="text_recheck_gamepad_status">Now Re-checking Device Status.</string>
     <string name="text_search_file">Search File</string>
     <string name="text_now_installing">Installing... %2.0f%%\n</string>

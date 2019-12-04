@@ -23,6 +23,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
+
 public class GamepadListActivity extends AppCompatActivity {
 	final String TAG = "GamepadUtility";
 	RecyclerView recyclerView;
@@ -131,17 +133,22 @@ public class GamepadListActivity extends AppCompatActivity {
 			final int x = (int)view.getTag();
 			Log.i( TAG, "onClick: x = " + x );
 			if (isTargetDevice(x)) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
-				builder.setIcon(R.drawable.ic_download);
-				builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						GotoInstallFirmware(x, resourcelist.get(i));
-					}
-				});
-				AlertDialog alertDialog = builder.create();
-				alertDialog.show();
+				if (SET_FW_ID == -1) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
+					builder.setIcon(R.drawable.ic_download);
+					builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							SET_FW_ID = i;
+							GotoInstallFirmware(x, resourcelist.get(i));
+						}
+					});
+					AlertDialog alertDialog = builder.create();
+					alertDialog.show();
+				} else {
+					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
+				}
 			}
 		}
 		view.setEnabled(false);
