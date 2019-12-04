@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/gamepad_layer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:clickable="true"
+    android:onClick="onClick"
+    app:cardCornerRadius="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false">
+
+        <TextView
+            android:id="@+id/pad_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Gamepad Name"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/gamepad_icon"
+            app:layout_constraintStart_toEndOf="@+id/gamepad_icon"
+            app:layout_constraintTop_toBottomOf="@+id/pad_number"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <ImageView
+            android:id="@+id/gamepad_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_gamepad_bluetooth" />
+
+        <TextView
+            android:id="@+id/pad_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Controller Number"
+            app:layout_constraintBottom_toTopOf="@+id/pad_name"
+            app:layout_constraintStart_toEndOf="@+id/gamepad_icon"
+            app:layout_constraintTop_toTopOf="@+id/gamepad_icon"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/pad_connect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Connected Type"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/pad_number"
+            app:layout_constraintTop_toBottomOf="@+id/pad_number" />
+
+        <TextView
+            android:id="@+id/pad_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Address: AA:BB:CC:DD:EE:FF"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/pad_firmware"
+            app:layout_constraintTop_toBottomOf="@+id/pad_firmware" />
+
+        <TextView
+            android:id="@+id/pad_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Battery"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/pad_connect"
+            app:layout_constraintTop_toBottomOf="@+id/pad_connect" />
+
+        <TextView
+            android:id="@+id/pad_firmware"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Firmware"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@+id/pad_battery"
+            app:layout_constraintTop_toBottomOf="@+id/pad_battery" />
+
+        <ImageButton
+            android:id="@+id/gamepad_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/gamepad_firmware"
+            app:srcCompat="@drawable/ic_settings_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/gamepad_firmware"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_get_app_black_24dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

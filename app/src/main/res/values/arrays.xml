@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gamepad_list">
+        <item>TIMGamepad v2</item>
+        <item>SHAKS S2</item>
+        <item>SHAKS S3</item>
+    </string-array>
+</resources>
