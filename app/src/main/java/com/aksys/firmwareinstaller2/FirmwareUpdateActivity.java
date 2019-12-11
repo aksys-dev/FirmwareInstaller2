@@ -116,6 +116,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		gamepad.setGamepadEvent(null);
 		unregisterReceiver(receiver);
 	}
 	
@@ -140,13 +141,14 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	void CheckDevice() {
 		if (gamepad != null) {
+			gamepad.setGamepadId();
 			gamepad.onServiceHold(true);
 			gamepad.setGamepadEvent(this);
 			gamepad.onConnectGamepad();
 		}
 		
 		Log.i( TAG, "CheckDevice: updated " + updating );
-		if (gamepad != null && !updating) {
+		if (gamepad != null && !updating && gamepad.getGamepadId() != -1) {
 			GetFirmwareFile();
 		}
 		else if (gamepad != null && updating) {
@@ -345,7 +347,53 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	@Override
 	public void ConnectionFail() {
-		if (updating) CancelUpdate();
+		if (updating) {
+			/// updated.
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (!bar.isIndeterminate() && bar.getProgress() <= bar.getMax() && (alertDialog == null || !alertDialog.isShowing())) {
+						gamepad.removePair();
+						AlertDialog.Builder builder = new AlertDialog.Builder( FirmwareUpdateActivity.this );
+						builder.setIcon( R.drawable.ic_download );
+						builder.setTitle( "WARNING!" );
+						builder.setMessage("Gamepad is Disconnected!\nPlease Reset this gamepad and repair gamepad.");
+						builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								gamepad.onDisconnectGamepad();
+								gamepad.removePair();
+								dialog.dismiss();
+								GamepadList.getInstance().checkList();
+								finish();
+							}
+						});
+						alertDialog = builder.create();
+						alertDialog.show();
+					}
+				}
+			});
+		}
+		else {
+			/// Connection Fail.
+			AlertDialog.Builder builder = new AlertDialog.Builder( this );
+			builder.setIcon( R.drawable.ic_download );
+			builder.setTitle( R.string.text_gamepad_notfound );
+			builder.setMessage( R.string.text_gamepad_notfound_desc );
+			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					gamepad.onDisconnectGamepad();
+					gamepad.removePair();
+					dialog.dismiss();
+					GamepadList.getInstance().checkList();
+					finish();
+				}
+			} );
+			
+			alertDialog = builder.create();
+			alertDialog.show();
+		}
 	}
 	
 	@Override
@@ -353,6 +401,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		if (updating) {
 			Log.i(TAG, "Upgrade Success Checked.");
 			GetFirmware();
+		} else {
+		
 		}
 	}
 	

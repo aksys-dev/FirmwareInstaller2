@@ -500,6 +500,7 @@ public class GamepadInfo {
 				Log.w( TAG, "Call: Can't send message\n" + e.toString() );
 				onDisconnectGamepad();
 				status = STATUS_NOT_CONNECT;
+				ConnectionFail();
 			}
 		}
 		
@@ -508,7 +509,8 @@ public class GamepadInfo {
 				Log.i( TAG, String.format( "Call: Send Code %x ...", output[0] ) );
 				outputStream.write( output );
 			} catch ( IOException e ) {
-				Log.w( TAG, "sendByteStream: Not Work" );
+				Log.w( TAG, "sendByteStream: Not Work\n" + e.toString() );
+				ConnectionFail();
 				return false;
 			}
 			return true;
