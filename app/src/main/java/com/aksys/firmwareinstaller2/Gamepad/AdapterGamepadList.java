@@ -64,7 +64,8 @@ public class AdapterGamepadList extends RecyclerView.Adapter<RecyclerView.ViewHo
 		/// 리스트 뷰에 들어갈 정보를 입력하는 공간
 		final GamepadViewHolder viewHolder = (GamepadViewHolder) holder;
 		viewHolder.gamepadName.setText( gamepadInfoArrayList.get( position ).getGamepadName() );
-		viewHolder.gamepadNumber.setVisibility(View.GONE);
+		viewHolder.gamepadNumber.setText(gamepadInfoArrayList.get(position).getAddress());
+		viewHolder.gamepadNumber.setVisibility(View.VISIBLE);
 		viewHolder.gamepadType.setText(String.format(viewHolder.gamepadType.getContext().getString(R.string.text_connectiontype), gamepadInfoArrayList.get( position ).getGamepadTypeString()));
 //		viewHolder.gamepadSetting.setVisibility( View.GONE );
 		viewHolder.layout.setTag( position );
