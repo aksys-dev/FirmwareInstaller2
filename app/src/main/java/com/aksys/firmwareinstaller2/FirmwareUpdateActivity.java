@@ -155,21 +155,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			// blank Action.
 		}
 		else {
-			AlertDialog.Builder builder = new AlertDialog.Builder( this );
-			builder.setIcon( R.drawable.ic_download );
-			builder.setTitle( R.string.text_gamepad_notfound );
-			builder.setMessage( R.string.text_gamepad_notfound_desc );
-			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-					SET_FW_ID = -1;
-					finish();
-				}
-			} );
-			
-			alertDialog = builder.create();
-			alertDialog.show();
+			SET_FW_ID = -1;
+			CancelUpdate("Not Found Gamepad. Please Re-check Gamepad.");
 		}
 	}
 	
@@ -230,7 +217,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		else {
 			// Not Detect Firmware.
 			Log.w(TAG, "GetFirmwareFile: Not Detect Firmware.");
-			CancelUpdate();
+			CancelUpdate("Not Found target firmware file.");
 		}
 	}
 	
@@ -264,7 +251,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					dialog.dismiss();
-					CancelUpdate();
+					CancelUpdate("selected Cancel because not found firmware");
 				}
 			} );
 			builder.setNegativeButton( R.string.text_search_file, new DialogInterface.OnClickListener() {
@@ -295,7 +282,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				public void onClick(DialogInterface dialog, int which) {
 					SET_FW_ID = -1;
 					dialog.dismiss();
-					CancelUpdate();
+					CancelUpdate(String.format("not want to install firmware.\nVersion: %d\nDevice: %s", AppFW.getFirmwareVersion(), gamepad.getGamepadName()));
 				}
 			} );
 		}
@@ -312,37 +299,56 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		updating = true;
 	}
 	
-	void CancelUpdate() {
+	void CancelUpdate(String reasons) {
+		CancelUpdate(reasons, "Install Cancelled.");
+	}
+	
+	void CancelUpdate(String reasons, String title) {
 		Log.i(TAG, "CancelUpdate");
 		if (alertDialog != null) alertDialog.dismiss();
 		gamepad.onDisconnectGamepad();
-		finish();
+		AlertDialog.Builder builder = new AlertDialog.Builder( this );
+		builder.setIcon( R.drawable.ic_download );
+		builder.setTitle(title);
+		builder.setMessage(String.format("Firmware install is cancelled for the following reasons:\n%s", reasons));
+		builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				finish();
+			}
+		});
+		alertDialog = builder.create();
+		alertDialog.show();
 	}
 	
 	void FinishUpdate() {
 		Log.i(TAG, "FinishUpdate");
 		handler.removeCallbacks(PleaseCheckDevice);
-		if (needRepair) {
-			AlertDialog.Builder builder = new AlertDialog.Builder( this );
-			builder.setIcon( R.drawable.ic_download );
-			builder.setTitle( R.string.firmware_update );
-			builder.setMessage(String.format(getString(R.string.firmware_update_completed_desc),gamepad.getGamepadName(),gamepad.getFirmware()));
-			builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					gamepad.onDisconnectGamepad();
-					gamepad.removePair();
-					dialog.dismiss();
-					GamepadList.getInstance().checkList();
-					finish();
-				}
-			});
-			alertDialog = builder.create();
-			alertDialog.show();
-		}
-		else {
-			finish();
-		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(R.drawable.ic_download);
+		builder.setTitle(R.string.firmware_update);
+		builder.setMessage(String.format(getString(R.string.firmware_update_completed_desc), gamepad.getGamepadName(), gamepad.getFirmware()));
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				gamepad.onDisconnectGamepad();
+				gamepad.removePair();
+				dialog.dismiss();
+				GamepadList.getInstance().checkList();
+				finish();
+			}
+		});
+		builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				finish();
+			}
+		});
+		alertDialog = builder.create();
+		alertDialog.show();
 	}
 	
 	@Override
@@ -353,46 +359,20 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				@Override
 				public void run() {
 					if (!bar.isIndeterminate() && bar.getProgress() <= bar.getMax() && (alertDialog == null || !alertDialog.isShowing())) {
+						gamepad.onDisconnectGamepad();
 						gamepad.removePair();
-						AlertDialog.Builder builder = new AlertDialog.Builder( FirmwareUpdateActivity.this );
-						builder.setIcon( R.drawable.ic_download );
-						builder.setTitle( "WARNING!" );
-						builder.setMessage("Gamepad is Disconnected!\nPlease Reset this gamepad and repair gamepad.");
-						builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								gamepad.onDisconnectGamepad();
-								gamepad.removePair();
-								dialog.dismiss();
-								GamepadList.getInstance().checkList();
-								finish();
-							}
-						});
-						alertDialog = builder.create();
-						alertDialog.show();
+						CancelUpdate("Gamepad is Disconnected!\nPlease Reset this gamepad and repair gamepad.", "WARNING!");
+						GamepadList.getInstance().checkList();
 					}
 				}
 			});
 		}
 		else {
 			/// Connection Fail.
-			AlertDialog.Builder builder = new AlertDialog.Builder( this );
-			builder.setIcon( R.drawable.ic_download );
-			builder.setTitle( R.string.text_gamepad_notfound );
-			builder.setMessage( R.string.text_gamepad_notfound_desc );
-			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					gamepad.onDisconnectGamepad();
-					gamepad.removePair();
-					dialog.dismiss();
-					GamepadList.getInstance().checkList();
-					finish();
-				}
-			} );
-			
-			alertDialog = builder.create();
-			alertDialog.show();
+			gamepad.onDisconnectGamepad();
+			gamepad.removePair();
+			GamepadList.getInstance().checkList();
+			CancelUpdate(getString(R.string.text_gamepad_notfound_desc));
 		}
 	}
 	
