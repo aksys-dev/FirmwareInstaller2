@@ -48,7 +48,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		recyclerView = findViewById( R.id.gamepad_listview );
 		recyclerView.setHasFixedSize( true );
 		Log.i(TAG, "onCreate: widthDp: " + getResources().getConfiguration().screenWidthDp);
-		layoutManager = new GridLayoutManager(this, 1 + (getResources().getConfiguration().screenWidthDp / 390) );
+		layoutManager = new GridLayoutManager(this, 1 + (getResources().getConfiguration().screenWidthDp / 400) );
 //		if (getResources().getConfiguration().screenWidthDp / 490 > 1) {
 //
 //		} else {
@@ -149,6 +149,22 @@ public class GamepadListActivity extends AppCompatActivity {
 				} else {
 					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
 				}
+			} else {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Error");
+				builder.setIcon(R.drawable.ic_close_24dp);
+				builder.setMessage(String.format("Not found Brand Name. Please re-check device name.\n- Spaces(^): %s\n- Brand Name: %s",
+						gamepadList.getIndex(x).getGamepadName().replace(" ", "^"),
+						checkTargetBrand(gamepadList.getIndex(x).getGamepadName())
+				));
+				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				AlertDialog alertDialog = builder.create();
+				alertDialog.show();
 			}
 		}
 		view.setEnabled(false);
@@ -158,6 +174,17 @@ public class GamepadListActivity extends AppCompatActivity {
 				clickedView.setEnabled(true);
 			}
 		}, 500);
+	}
+	
+	private String checkTargetBrand(String gamepadName) {
+		if (gamepadName.contains("S2") || gamepadName.contains("s2")) return "SHAKS S2";
+		if (gamepadName.contains("S3") || gamepadName.contains("s3")) return "SHAKS S3";
+		if (gamepadName.contains("S4") || gamepadName.contains("s4")) return "SHAKS S4";
+		if (gamepadName.contains("S5") || gamepadName.contains("s5")) return "SHAKS S5";
+		if (gamepadName.contains("S2i") || gamepadName.contains("s2i") || gamepadName.contains("s2I") || gamepadName.contains("S2I")) return "SHAKS S2i";
+		
+		if (gamepadName.contains("V2") || gamepadName.contains("v2")) return "TIMGamepad v2";
+		return "Cannot found our brand name.\nif you changed name from app, please reset gamepad first.";
 	}
 	
 	boolean isTargetDevice(int x) {
