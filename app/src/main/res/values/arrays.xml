@@ -4,5 +4,20 @@
         <item>TIMGamepad v2</item>
         <item>SHAKS S2</item>
         <item>SHAKS S3</item>
+        <item>SHAKS S4</item>
+        <item>SHAKS S5</item>
+        <item>SHAKS S2i</item>
+        <item>PartnerTV Gamepad</item>
+        <item>TIMGamepad v3</item>
+    </string-array>
+    <string-array name="checklist">
+        <item>v2</item>
+        <item>s2</item>
+        <item>s3</item>
+        <item>s4</item>
+        <item>s5</item>
+        <item>s2i</item>
+        <item>partner</item>
+        <item>v3</item>
     </string-array>
 </resources>

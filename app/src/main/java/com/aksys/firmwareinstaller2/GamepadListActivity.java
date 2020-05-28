@@ -120,6 +120,7 @@ public class GamepadListActivity extends AppCompatActivity {
 				@Override
 				public void onClick(DialogInterface dialogInterface, int i) {
 					dialogInterface.dismiss();
+					finish();
 				}
 			});
 			AlertDialog alertDialog = builder.create();
@@ -134,18 +135,7 @@ public class GamepadListActivity extends AppCompatActivity {
 			Log.i( TAG, "onClick: x = " + x );
 			if (isTargetDevice(x)) {
 				if (SET_FW_ID == -1) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
-					builder.setIcon(R.drawable.ic_download);
-					builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-							SET_FW_ID = i;
-							GotoInstallFirmware(x, resourcelist.get(i));
-						}
-					});
-					AlertDialog alertDialog = builder.create();
-					alertDialog.show();
+					ShowTargetFirmware(x);
 				} else {
 					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
 				}
@@ -163,6 +153,12 @@ public class GamepadListActivity extends AppCompatActivity {
 						dialog.dismiss();
 					}
 				});
+				builder.setNeutralButton("Continue Install", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						ShowTargetFirmware(x);
+					}
+				});
 				AlertDialog alertDialog = builder.create();
 				alertDialog.show();
 			}
@@ -176,14 +172,29 @@ public class GamepadListActivity extends AppCompatActivity {
 		}, 500);
 	}
 	
+	int targetDevice = -1;
+	void ShowTargetFirmware(int x) {
+		targetDevice = x;
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
+		builder.setIcon(R.drawable.ic_download);
+		builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+				SET_FW_ID = i;
+				GotoInstallFirmware(targetDevice, resourcelist.get(i));
+			}
+		});
+		AlertDialog alertDialog = builder.create();
+		alertDialog.show();
+	}
+	
 	private String checkTargetBrand(String gamepadName) {
-		if (gamepadName.contains("S2") || gamepadName.contains("s2")) return "SHAKS S2";
-		if (gamepadName.contains("S3") || gamepadName.contains("s3")) return "SHAKS S3";
-		if (gamepadName.contains("S4") || gamepadName.contains("s4")) return "SHAKS S4";
-		if (gamepadName.contains("S5") || gamepadName.contains("s5")) return "SHAKS S5";
-		if (gamepadName.contains("S2i") || gamepadName.contains("s2i") || gamepadName.contains("s2I") || gamepadName.contains("S2I")) return "SHAKS S2i";
-		
-		if (gamepadName.contains("V2") || gamepadName.contains("v2")) return "TIMGamepad v2";
+		String[] checklist = getResources().getStringArray(R.array.checklist);
+		for (int x = 0; x < checklist.length; x++) {
+			if (gamepadName.toLowerCase().contains(checklist[x]))
+				return getResources().getStringArray(R.array.gamepad_list)[x];
+		}
 		return "Cannot found our brand name.\nif you changed name from app, please reset gamepad first.";
 	}
 	
