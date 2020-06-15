@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +41,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	Context context;
 	Handler handler;
 	
-	boolean updating;
-	boolean reinstall;
+	static boolean updating;
+	static boolean reinstall;
 	FirmwareFile AppFW;
 	
 	AlertDialog alertDialog;
@@ -274,6 +276,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					updating = true;
 					InstallFirmware();
 				}
 			} );
@@ -296,7 +299,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			alertDialog = null;
 		}
 		gamepad.TryFirmwareWrite( AppFW.getFilebyteArray() );
-		updating = true;
 	}
 	
 	void CancelUpdate(String reasons) {
@@ -326,29 +328,33 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		Log.i(TAG, "FinishUpdate");
 		handler.removeCallbacks(PleaseCheckDevice);
 		
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setIcon(R.drawable.ic_download);
-		builder.setTitle(R.string.firmware_update);
-		builder.setMessage(String.format(getString(R.string.firmware_update_completed_desc), gamepad.getGamepadName(), gamepad.getFirmware()));
-		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+		handler.post(new Runnable() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				gamepad.onDisconnectGamepad();
-				gamepad.removePair();
-				dialog.dismiss();
-				GamepadList.getInstance().checkList();
-				finish();
+			public void run() {
+				bar.setIndeterminate(false);
+				bar.setProgress(bar.getMax());
+				textViewMessage.setText(String.format(getString(R.string.firmware_update_completed_desc), gamepad.getGamepadName(), gamepad.getFirmware()));
+				Button button = findViewById(R.id.button_close_action);
+				button.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						CloseActivityAndRemove();
+					}
+				});
+				button.setVisibility(View.VISIBLE);
 			}
 		});
-		builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				finish();
-			}
-		});
-		alertDialog = builder.create();
-		alertDialog.show();
+	}
+	
+	void CloseActivityAndRemove() {
+		Log.i(TAG, "CloseActivityAndRemove: ");
+		if (alertDialog != null) {
+			alertDialog.dismiss();
+		}
+		gamepad.setGamepadEvent(null);
+		gamepad.onDisconnectGamepad();
+		gamepad.removePair();
+		finish();
 	}
 	
 	@Override
@@ -389,15 +395,13 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	@Override
 	public void GetFirmware() {
 		if (updating) {
-			Log.i(TAG, "Firmware Value Detected. " + gamepad.getFirmware());
+			Log.i(TAG, "Firmware Value Detected. " + gamepad.getFirmware() + " target: " + AppFW.getFirmwareVersion());
+			if (gamepad.getFirmware() == "1" || gamepad.getFirmwareInt() == -1) {
+				gamepad.CheckFirmware();
+			} else {
+				FinishUpdate();
+			}
 		}
-		if (updating && gamepad.getFirmwareInt() == AppFW.getFirmwareVersion())
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					FinishUpdate();
-				}
-			});
 	}
 	
 	@Override

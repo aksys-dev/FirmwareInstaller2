@@ -178,12 +178,7 @@ public class GamepadInfo {
 	}
 	
 	public void setGamepadEvent(final GamepadEvent event) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				gamepadEvent = event;
-			}
-		});
+		gamepadEvent = event;
 	}
 	
 	public void connectAKSGamepad(BluetoothDevice bluetoothDevice, boolean openSerial) {
@@ -373,6 +368,7 @@ public class GamepadInfo {
 	}
 	
 	private synchronized void WriteFirmware() {
+		Log.i(TAG, "WriteFirmware: ");
 		if (savedbyte != null) SendByte( savedbyte );
 	}
 	
@@ -506,7 +502,7 @@ public class GamepadInfo {
 		
 		synchronized boolean sendByteStream(byte[] output) {
 			try {
-				Log.i( TAG, String.format( "Call: Send Code %x ...", output[0] ) );
+				Log.i( TAG, String.format( "Call: Send Code %x ... (size: %d)", output[0], output.length ) );
 				outputStream.write( output );
 			} catch ( IOException e ) {
 				Log.w( TAG, "sendByteStream: Not Work\n" + e.toString() );
@@ -522,7 +518,6 @@ public class GamepadInfo {
 			CheckFirmware();
 			CheckBattery();
 			CheckDeviceCode();
-			SetOButtonData();
 		}
 		
 		@Override

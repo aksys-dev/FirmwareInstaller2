@@ -32,6 +32,7 @@ public class GamepadListActivity extends AppCompatActivity {
 	GamepadList gamepadList = GamepadList.getInstance();
 	
 	View clickedView;
+	int resources;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,8 @@ public class GamepadListActivity extends AppCompatActivity {
 //		setSupportActionBar( toolbar );
 //		getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 		
-		CheckResourceList();
+		resources = CheckResourceList();
+		Log.i(TAG, "onCreate: resources = " + resources);
 		
 		recyclerView = findViewById( R.id.gamepad_listview );
 		recyclerView.setHasFixedSize( true );
@@ -60,7 +62,7 @@ public class GamepadListActivity extends AppCompatActivity {
 	List<Integer> resourcelist;
 	List<String> resourceNameList;
 	
-	void CheckResourceList() {
+	int CheckResourceList() {
 		resourcelist = new ArrayList<>();
 		resourceNameList = new ArrayList<>();
 		
@@ -74,6 +76,7 @@ public class GamepadListActivity extends AppCompatActivity {
 				e.printStackTrace();
 			}
 		}
+		return resourcelist.size();
 	}
 	
 	String[] getResourcesStringArray() {
@@ -175,18 +178,36 @@ public class GamepadListActivity extends AppCompatActivity {
 	int targetDevice = -1;
 	void ShowTargetFirmware(int x) {
 		targetDevice = x;
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
-		builder.setIcon(R.drawable.ic_download);
-		builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialogInterface, int i) {
-				SET_FW_ID = i;
-				GotoInstallFirmware(targetDevice, resourcelist.get(i));
-			}
-		});
-		AlertDialog alertDialog = builder.create();
-		alertDialog.show();
+		
+		if (resources == 1) {
+			GotoInstallFirmware(targetDevice, resourcelist.get(0));
+		} else if (resources > 1) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
+			builder.setIcon(R.drawable.ic_download);
+			builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialogInterface, int i) {
+					SET_FW_ID = i;
+					GotoInstallFirmware(targetDevice, resourcelist.get(i));
+				}
+			});
+			AlertDialog alertDialog = builder.create();
+			alertDialog.show();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("NO FIRMWARE!");
+			builder.setIcon(R.drawable.ic_download);
+			builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+					finish();
+				}
+			});
+			AlertDialog alertDialog = builder.create();
+			alertDialog.show();
+		}
 	}
 	
 	private String checkTargetBrand(String gamepadName) {
