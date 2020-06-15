@@ -9,6 +9,8 @@
         <item>SHAKS S2i</item>
         <item>PartnerTV Gamepad</item>
         <item>TIMGamepad v3</item>
+        <item>POST gamepad</item>
+        <item>Magenta GamePad</item>
     </string-array>
     <string-array name="checklist">
         <item>v2</item>
