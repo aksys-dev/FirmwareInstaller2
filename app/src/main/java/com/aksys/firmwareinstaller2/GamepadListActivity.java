@@ -44,9 +44,6 @@ public class GamepadListActivity extends AppCompatActivity {
 //		setSupportActionBar( toolbar );
 //		getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 		
-		resources = CheckResourceList();
-		Log.i(TAG, "onCreate: resources = " + resources);
-		
 		recyclerView = findViewById( R.id.gamepad_listview );
 		recyclerView.setHasFixedSize( true );
 		Log.i(TAG, "onCreate: widthDp: " + getResources().getConfiguration().screenWidthDp);
@@ -68,13 +65,33 @@ public class GamepadListActivity extends AppCompatActivity {
 		
 		Field[] fields=R.raw.class.getFields();
 		for(int count=0; count < fields.length; count++){
-			Log.i("Raw Asset: ", fields[count].getName());
+			String name = fields[count].getName();
+			Log.i("Raw Asset: ", name);
 			try {
 				resourcelist.add(fields[count].getInt(fields[count]));
 				resourceNameList.add(fields[count].getName());
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
+		}
+		return resourcelist.size();
+	}
+	
+	int CheckResourceList(String target) {
+		resourcelist = new ArrayList<>();
+		resourceNameList = new ArrayList<>();
+		
+		Field[] fields=R.raw.class.getFields();
+		for(int count=0; count < fields.length; count++) {
+			String name = fields[count].getName();
+			Log.i("Raw Asset: ", name);
+			if (name.contains(target))
+				try {
+					resourcelist.add(fields[count].getInt(fields[count]));
+					resourceNameList.add(fields[count].getName());
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 		}
 		return resourcelist.size();
 	}
@@ -136,12 +153,16 @@ public class GamepadListActivity extends AppCompatActivity {
 		if (view.getTag() != null) {
 			final int x = (int)view.getTag();
 			Log.i( TAG, "onClick: x = " + x );
-			if (isTargetDevice(x)) {
-				if (SET_FW_ID == -1) {
-					ShowTargetFirmware(x);
-				} else {
-					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
-				}
+			GamepadInfo g = findTargetDevice(x);
+			if (g != null) {
+				Log.i(TAG, "onCreate: resources = " + resources);
+				ShowTargetFirmware(x);
+//				if (SET_FW_ID == -1 || resources < SET_FW_ID) {
+//
+//				} else {
+//					//// Auto Select before installed FW.
+//					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
+//				}
 			} else {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle("Error");
@@ -178,12 +199,17 @@ public class GamepadListActivity extends AppCompatActivity {
 	int targetDevice = -1;
 	void ShowTargetFirmware(int x) {
 		targetDevice = x;
-		
-		if (resources == 1) {
+		GamepadInfo g = gamepadList.getIndex(targetDevice);
+		int sizes = CheckResourceList(checkTargetFWName(g.getGamepadName()));
+		if (resources == sizes && SET_FW_ID > -1) {
+			GotoInstallFirmware(targetDevice, resourcelist.get(SET_FW_ID));
+		} else if (sizes == 1) {
+			resources = sizes;
 			GotoInstallFirmware(targetDevice, resourcelist.get(0));
-		} else if (resources > 1) {
+		} else if (sizes > 1) {
+			resources = sizes;
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(gamepadList.getIndex(x).getGamepadName() + "\nSelect Firmware");
+			builder.setTitle(g.getGamepadName() + "\nSelect Firmware");
 			builder.setIcon(R.drawable.ic_download);
 			builder.setItems(getResourcesStringArray(), new DialogInterface.OnClickListener() {
 				@Override
@@ -219,14 +245,21 @@ public class GamepadListActivity extends AppCompatActivity {
 		return "Cannot found our brand name.\nif you changed name from app, please reset gamepad first.";
 	}
 	
-	boolean isTargetDevice(int x) {
+	private String checkTargetFWName(String gamepadName) {
+		String[] checklist = getResources().getStringArray(R.array.checklist);
+		for (String s : checklist) {
+			if (gamepadName.toLowerCase().contains(s)) return s;
+		}
+		return "Cannot found our brand name.\nif you changed name from app, please reset gamepad first.";
+	}
+	
+	GamepadInfo findTargetDevice(int x) {
 		for (GamepadInfo g : gamepadList.getList()) {
 			for (String brand : getResources().getStringArray(R.array.gamepad_list)) {
-				if (g.getGamepadName().contains(brand)) return true;
+				if (g.getGamepadName().contains(brand)) return g;
 			}
-			
 		}
-		return false;
+		return null;
 	}
 	
 	public void GotoInstallFirmware(int index, int firmware_index) {

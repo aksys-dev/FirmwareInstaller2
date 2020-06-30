@@ -600,6 +600,10 @@ public class GamepadInfo {
 						else if ( recv[INDEX_CMD] == CMD_DISABLE_IMU) {
 							Log.i(TAG, "CMD_DISABLE_IMU");
 							SetIMUSensor(false);
+						} else if ( recv[INDEX_CMD] == CMD_ERROR_HEADER ) {
+							Log.w( TAG, "Firmware: CMD_ERROR_HEADER" );
+							status = STATUS_COMPLETE;
+							onDisconnectGamepad();
 						} else if ( recv[INDEX_CMD] == CMD_OTA_DATA_RECEVIED ) {
 							Log.d( TAG, "Firmware: CMD_OTA_END_TAG" );
 						} else if ( recv[INDEX_CMD] == CMD_PARTITION_VERIFY_SUCCESS ) {
