@@ -8,5 +8,5 @@ public interface GamepadEvent {
 	void SendingFirmware(int sendbytes);
 	void GetDeviceCode();
 	void FirmwareInstalled();
-	void SetIMUSensor(boolean status);
+	void FirmwareFailed();
 }

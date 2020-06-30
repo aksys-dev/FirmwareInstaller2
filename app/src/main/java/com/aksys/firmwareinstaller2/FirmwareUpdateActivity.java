@@ -98,12 +98,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			reinstall = getIntent().getBooleanExtra(getString(R.string.intent_reinstall), false);
 		}
 		handler = new Handler();
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				CheckDevice();
-			}
-		});
+		CheckDevice();
 		
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
@@ -444,7 +439,25 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	}
 	
 	@Override
-	public void SetIMUSensor(boolean status) {
-	
+	public void FirmwareFailed() {
+		// TODO: Firmware is Installed. Maybe Reset.
+		Log.i(TAG, "Firmware Failed");
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				bar.setIndeterminate(false);
+				bar.setProgress(0);
+				textViewMessage.setText(R.string.text_firmware_need_power);
+				Button button = findViewById(R.id.button_restart_action);
+				button.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						InstallFirmware();
+						findViewById(R.id.button_restart_action).setVisibility(View.GONE);
+					}
+				});
+				button.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 }

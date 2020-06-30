@@ -85,7 +85,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		for(int count=0; count < fields.length; count++) {
 			String name = fields[count].getName();
 			Log.i("Raw Asset: ", name);
-			if (name.contains(target))
+			if (name.contains(target + "_"))
 				try {
 					resourcelist.add(fields[count].getInt(fields[count]));
 					resourceNameList.add(fields[count].getName());

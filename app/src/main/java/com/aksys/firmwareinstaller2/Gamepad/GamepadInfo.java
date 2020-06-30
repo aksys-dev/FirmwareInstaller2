@@ -514,7 +514,6 @@ public class GamepadInfo {
 		
 		synchronized void StartCommand() {
 			UpdateComplete();
-			SetGamepadIndicator();
 			CheckFirmware();
 			CheckBattery();
 			CheckDeviceCode();
@@ -536,18 +535,19 @@ public class GamepadInfo {
 			byte[] recv = new byte[22];
 			boolean needUpdate;
 			if (gamepadEvent != null) gamepadEvent.ConnectionSuccess();
-			//String addMessage;
 			while ( !Thread.currentThread().isInterrupted() ) {
 				try {
 					if (inputStream != null && ( inputStream.available() > 0)) {
 						bytes = inputStream.read(recv);
 						needUpdate = false;
-						//addMessage = "";
-						if ( recv[INDEX_CMD] == CMD_ENABLE_UPDATE_MODE ) {
+						if (recv[INDEX_CMD] == CMD_ENABLE_UPDATE_MODE && recv[INDEX_STATUS] == 0x00) {
 							Log.d( TAG, "CMD_ENABLE_UPDATE_MODE" );
 							status = STATUS_WRITING;
-							//addMessage += "Device Updating...";
 							WriteFirmware();
+						} else if (recv[INDEX_CMD] == CMD_ENABLE_UPDATE_MODE && recv[INDEX_STATUS] == 0x01) {
+							Log.w( TAG, "CMD_ENABLE_UPDATE_MODE -- FAIL." );
+							FirmwareFailed();
+							status = STATUS_IDLE;
 						} else if ( recv[INDEX_CMD] == CMD_DISABLE_UPDATE_MODE ) {
 							Log.d( TAG, "CMD_DISABLE_UPDATE_MODE" );
 							status = STATUS_IDLE;
@@ -593,13 +593,6 @@ public class GamepadInfo {
 							setFirmware(new String(recv, INDEX_DATA_START, 6));
 							Log.d(TAG, "Firmware: " + firmware);
 							needUpdate = true;
-						} else if ( recv[INDEX_CMD] == CMD_ENABLE_IMU) {
-							Log.i(TAG, "CMD_ENABLE_IMU");
-							SetIMUSensor(true);
-						}
-						else if ( recv[INDEX_CMD] == CMD_DISABLE_IMU) {
-							Log.i(TAG, "CMD_DISABLE_IMU");
-							SetIMUSensor(false);
 						} else if ( recv[INDEX_CMD] == CMD_ERROR_HEADER ) {
 							Log.w( TAG, "Firmware: CMD_ERROR_HEADER" );
 							status = STATUS_COMPLETE;
@@ -668,60 +661,25 @@ public class GamepadInfo {
 	}
 	
 	void ConnectionFail() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.ConnectionFail();
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.ConnectionFail();
 	}
 	
 	void SetFirmware() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.GetFirmware();
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.GetFirmware();
 	}
 	void SetBattery() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.GetBattery();
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.GetBattery();
 	}
 	void SetDeviceCode() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.GetDeviceCode();
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.GetDeviceCode();
 	}
 	void SendingFirmware(final int values) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.SendingFirmware(values);
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.SendingFirmware(values);
 	}
 	void FirmwareInstalled() {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.FirmwareInstalled();
-			}
-		});
+		if (gamepadEvent != null) gamepadEvent.FirmwareInstalled();
 	}
-	void SetIMUSensor(final boolean service) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (gamepadEvent != null) gamepadEvent.SetIMUSensor(service);
-			}
-		});
+	void FirmwareFailed() {
+		if (gamepadEvent != null) gamepadEvent.FirmwareFailed();
 	}
 }

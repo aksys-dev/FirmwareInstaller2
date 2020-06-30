@@ -6,8 +6,8 @@ android {
         applicationId "com.aksys.firmwareinstaller2"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 7
-        versionName "2.3"
+        versionCode 8
+        versionName "2.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "AKS_Bluetooth", "\"00:1B:29\""

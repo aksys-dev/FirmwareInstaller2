@@ -120,4 +120,5 @@
     <string name="text_waiting_connection">Waiting connection...</string>
     <string name="title_option_obutton">Option O-Button</string>
     <string name="title_setting_turbo_button">Setting Turbo Keys</string>
+    <string name="text_firmware_need_power">You need to charge the gamepad to get started.\nPlease connect the cable.</string>
 </resources>
