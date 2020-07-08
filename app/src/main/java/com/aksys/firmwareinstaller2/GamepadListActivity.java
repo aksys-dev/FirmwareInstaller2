@@ -283,21 +283,6 @@ public class GamepadListActivity extends AppCompatActivity {
 			case R.id.menu_bluetooth_setting:
 				startActivity( new Intent( Settings.ACTION_BLUETOOTH_SETTINGS ) );
 				return true;
-//			case R.id.menu_select_firmware:
-//				//TODO: Select Firmware
-//				return true;
-//			case R.id.action_all_gamepads:
-//				if (item.getTitle().toString().contains( getString(R.string.action_all_gamepads))) {
-//					gamepadList.checkList();
-//					ShowGamepadLists(true);
-//					item.setTitle(R.string.action_target_gamepads);
-//					getSupportActionBar().setTitle(R.string.title_activity_all_gamepad_list);
-//				} else {
-//					ShowGamepadLists(false);
-//					item.setTitle(R.string.action_all_gamepads);
-//					getSupportActionBar().setTitle(R.string.title_activity_gamepad_list);
-//				}
-//				return true;
 			default:
 				return super.onOptionsItemSelected( item );
 		}

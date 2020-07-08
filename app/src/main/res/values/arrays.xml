@@ -4,24 +4,26 @@
         <item>TIMGamepad v2</item>
         <item>SHAKS S2</item>
         <item>SHAKS S3</item>
+        <item>SHAKS S3i</item>
         <item>SHAKS S4</item>
         <item>SHAKS S5</item>
         <item>SHAKS S2i</item>
         <item>PartnerTV Gamepad</item>
         <item>TIMGamepad v3</item>
         <item>POST gamepad</item>
-        <item>Magenta GamePad</item>
+        <item>topp Gaming Miracle</item>
     </string-array>
     <string-array name="checklist">
         <item>v2</item>
         <item>s2</item>
         <item>s3</item>
+        <item>s3i</item>
         <item>s4</item>
         <item>s5</item>
         <item>s2i</item>
         <item>partner</item>
         <item>v3</item>
         <item>post</item>
-        <item>magenta</item>
+        <item>topp</item>
     </string-array>
 </resources>

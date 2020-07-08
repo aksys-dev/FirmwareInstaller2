@@ -427,7 +427,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	@Override
 	public void FirmwareInstalled() {
-		// TODO: Firmware is Installed. Maybe Reset.
 		Log.i(TAG, "FirmwareInstalled");
 		handler.post(new Runnable() {
 			@Override
@@ -440,7 +439,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	@Override
 	public void FirmwareFailed() {
-		// TODO: Firmware is Installed. Maybe Reset.
 		Log.i(TAG, "Firmware Failed");
 		handler.post(new Runnable() {
 			@Override
