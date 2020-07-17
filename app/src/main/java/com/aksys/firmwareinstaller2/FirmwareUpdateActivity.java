@@ -59,6 +59,17 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				if (i.getIntExtra( "TYPE", 0 ) == TYPE_AKS_BT ) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName());
 					CheckDeviceAfterRepaired();
+					Button button = findViewById(R.id.button_restart_action);
+					button.setText("RECONNECT");
+					button.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							gamepad.onDisconnectGamepad();
+							SystemClock.sleep(100);
+							CheckDeviceAfterRepaired();
+						}
+					});
+					button.setVisibility(View.VISIBLE);
 				}
 			}
 		}
@@ -312,6 +323,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				updating = false;
 				finish();
 			}
 		});
@@ -349,6 +361,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		gamepad.setGamepadEvent(null);
 		gamepad.onDisconnectGamepad();
 		gamepad.removePair();
+		updating = false;
 		finish();
 	}
 	
