@@ -1,5 +1,6 @@
 package com.aksys.firmwareinstaller2;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -58,18 +59,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				Intent i = CheckBluetooth.CheckBluetoothDevice(device.getName());
 				if (i.getIntExtra( "TYPE", 0 ) == TYPE_AKS_BT ) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName());
+					gamepad.connectAKSGamepad(device, true);
 					CheckDeviceAfterRepaired();
-					Button button = findViewById(R.id.button_restart_action);
-					button.setText("RECONNECT");
-					button.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							gamepad.onDisconnectGamepad();
-							SystemClock.sleep(100);
-							CheckDeviceAfterRepaired();
-						}
-					});
-					button.setVisibility(View.VISIBLE);
 				}
 			}
 		}
@@ -128,24 +119,18 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		unregisterReceiver(receiver);
 	}
 	
-	//
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		Log.i( TAG, "onActivityResult: " );
-//		int file = data.getIntExtra("fw_file", -1);
-//		if (file == -1) {
-//			// TODO: Not Found file.
-//			Log.e(TAG, "onActivityResult: Not Found FW File." );
-//		}
-//		if ( requestCode == INTENT_REQUEST && data != null ) {
-//			Log.i( TAG, "onActivityResult: file - " + file );
-//			AppFW = new FirmwareFile(this);
-//			if ( AppFW.setFile( file ) ) {
-//				CheckStatus();
-//			}
-//			return;
-//		}
-//	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent i) {
+		super.onActivityResult(requestCode, resultCode, i);
+		Log.i(TAG, "onActivityResult: ");
+		
+		if (requestCode == INTENT_REQUEST && resultCode == Activity.RESULT_OK && i != null) {
+			Log.i( TAG, "onActivityResult: " + i.getDataString() );
+			if (AppFW.setFile( i.getData() )) {
+				CheckStatus();
+			}
+		}
+	}
 	
 	void CheckDevice() {
 		if (gamepad != null) {
@@ -171,6 +156,18 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	void CheckDeviceAfterRepaired() {
 		if (gamepad != null && updating && gamepad.getGamepadId() == -1) {
 			Log.i( TAG, "CheckDeviceAfterRepaired" );
+			Button button = findViewById(R.id.button_restart_action);
+			button.setText("RECONNECT");
+			button.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					gamepad.onDisconnectGamepad();
+					SystemClock.sleep(100);
+					CheckDeviceAfterRepaired();
+				}
+			});
+			button.setVisibility(View.VISIBLE);
+			
 			gamepad.setGamepadEvent(this);
 			handler.post(new Runnable() {
 				@Override
@@ -218,14 +215,22 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			alertDialog.dismiss();
 			alertDialog = null;
 		}
-		int file = getIntent().getIntExtra("fw_file", -1);
-		Log.i(TAG, "GetFirmwareFile: " + file + " / name: " );
-		if (file != -1 && AppFW.setFile(file)) CheckStatus();
-		else if (getIntent().hasExtra("fw_path") && AppFW.setFile(getIntent().getStringExtra("fw_path"))) CheckStatus();
-		else {
-			// Not Detect Firmware.
-			Log.w(TAG, "GetFirmwareFile: Not Detect Firmware.");
-			CancelUpdate("Not Found target firmware file.");
+		if (getIntent().hasExtra("fw_file")) {
+			int file = getIntent().getIntExtra("fw_file", -1);
+			Log.i(TAG, "GetFirmwareFile: " + file);
+			if (file != -1 && AppFW.setFile(file)) CheckStatus();
+			else if (getIntent().hasExtra("fw_path") && AppFW.setFile(getIntent().getStringExtra("fw_path")))
+				CheckStatus();
+			else {
+				// Not Detect Firmware.
+				Log.w(TAG, "GetFirmwareFile: Not Detect Firmware.");
+				CancelUpdate("Not Found target firmware file.");
+			}
+		} else {
+			Intent i = new Intent( Intent.ACTION_OPEN_DOCUMENT );
+			i.addCategory( Intent.CATEGORY_OPENABLE );
+			i.setType( "*/*" );
+			startActivityForResult( i, INTENT_REQUEST );
 		}
 	}
 	
@@ -446,6 +451,18 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			public void run() {
 				bar.setIndeterminate(true);
 				textViewMessage.setText(R.string.text_gamepad_is_rebooting);
+				Button button = findViewById(R.id.button_restart_action);
+				button.setText("RECONNECT");
+				button.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						gamepad.onDisconnectGamepad();
+						SystemClock.sleep(100);
+						gamepad.onConnectGamepad();
+						CheckDeviceAfterRepaired();
+					}
+				});
+				button.setVisibility(View.VISIBLE);
 			}
 		});
 	}
