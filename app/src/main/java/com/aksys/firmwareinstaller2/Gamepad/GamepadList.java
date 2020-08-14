@@ -2,9 +2,6 @@ package com.aksys.firmwareinstaller2.Gamepad;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
-import android.util.Log;
-import android.view.InputDevice;
 
 import com.aksys.firmwareinstaller2.BuildConfig;
 
@@ -54,7 +51,7 @@ public class GamepadList {
 			GamepadInfo gamepadInfo = new GamepadInfo(-1, device.getName());
 			gamepadInfo.setBondStatus(device.getBondState());
 			gamepadInfo.setAddress(device.getAddress());
-			gamepadInfo.connectAKSGamepad(CheckBluetooth.getDevices(device.getName()), false);
+			gamepadInfo.connectAKSGamepad(CheckBluetooth.getDevices(device.getName()));
 			gamepadInfo.setConnectType(TYPE_AKS_BT);
 			GAMEPAD_LIST.add(gamepadInfo);
 			

@@ -59,7 +59,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				Intent i = CheckBluetooth.CheckBluetoothDevice(device.getName());
 				if (i.getIntExtra( "TYPE", 0 ) == TYPE_AKS_BT ) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName());
-					gamepad.connectAKSGamepad(device, true);
+					gamepad.connectAKSGamepad(device);
 					CheckDeviceAfterRepaired();
 				}
 			}
@@ -155,6 +155,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	void CheckDeviceAfterRepaired() {
 		if (gamepad != null && updating && gamepad.getGamepadId() == -1) {
+			gamepad.setGamepadEvent(this);
 			Log.i( TAG, "CheckDeviceAfterRepaired" );
 			Button button = findViewById(R.id.button_restart_action);
 			button.setText("RECONNECT");
@@ -168,7 +169,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			});
 			button.setVisibility(View.VISIBLE);
 			
-			gamepad.setGamepadEvent(this);
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
@@ -287,7 +287,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					updating = true;
 					InstallFirmware();
 				}
 			} );
@@ -305,6 +304,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	}
 	
 	void InstallFirmware() {
+		updating = true;
 		if (alertDialog != null) {
 			alertDialog.dismiss();
 			alertDialog = null;
@@ -421,6 +421,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	public void GetBattery() {
 		if (updating) {
 			Log.i(TAG, "Battery Value Detected. " + gamepad.getBattery());
+		} else if (AppFW.getFilebyteArray() != null) {
+			InstallFirmware();
 		}
 	}
 	

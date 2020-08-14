@@ -181,7 +181,7 @@ public class GamepadInfo {
 		gamepadEvent = event;
 	}
 	
-	public void connectAKSGamepad(BluetoothDevice bluetoothDevice, boolean openSerial) {
+	public void connectAKSGamepad(BluetoothDevice bluetoothDevice) {
 		device = bluetoothDevice;
 		if (device != null) setAddress( device.getAddress() );
 //		if (device != null && openSerial && gamepadName.contains(BuildConfig.SHAKS_BRAND)) onConnectGamepad();
