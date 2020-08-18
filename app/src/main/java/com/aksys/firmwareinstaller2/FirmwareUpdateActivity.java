@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +61,14 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				if (i.getIntExtra( "TYPE", 0 ) == TYPE_AKS_BT ) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName());
 					gamepad.connectAKSGamepad(device);
+					gamepad.onConnectGamepad();
 					CheckDeviceAfterRepaired();
+				}
+			} else if (intent.getAction() == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				if (device.getAddress() == gamepad.getAddress()) {
+					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getAddress());
+					handler.removeCallbacks(PleaseCheckDevice);
 				}
 			}
 		}
@@ -104,6 +112,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+		filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
 		registerReceiver(receiver, filter);
 	}
 	
@@ -154,24 +163,25 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	}
 	
 	void CheckDeviceAfterRepaired() {
-		if (gamepad != null && updating && gamepad.getGamepadId() == -1) {
+		if (updating) {
 			gamepad.setGamepadEvent(this);
 			Log.i( TAG, "CheckDeviceAfterRepaired" );
-			Button button = findViewById(R.id.button_restart_action);
-			button.setText("RECONNECT");
-			button.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					gamepad.onDisconnectGamepad();
-					SystemClock.sleep(100);
-					CheckDeviceAfterRepaired();
-				}
-			});
-			button.setVisibility(View.VISIBLE);
 			
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					Button button = findViewById(R.id.button_restart_action);
+					button.setText("RECONNECT");
+					button.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							gamepad.onDisconnectGamepad();
+							SystemClock.sleep(100);
+							CheckDeviceAfterRepaired();
+						}
+					});
+					button.setVisibility(View.VISIBLE);
+					
 					textViewMessage.setText(R.string.text_recheck_gamepad_status);
 				}
 			});
@@ -343,6 +353,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				ImageView image = findViewById(R.id.imageView3);
+				image.setImageResource(R.drawable.ic_gamepad_check);
 				bar.setIndeterminate(false);
 				bar.setProgress(bar.getMax());
 				textViewMessage.setText(String.format(getString(R.string.firmware_update_completed_desc), gamepad.getGamepadName(), gamepad.getFirmware()));
@@ -354,6 +366,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 					}
 				});
 				button.setVisibility(View.VISIBLE);
+				findViewById(R.id.button_restart_action).setVisibility(View.GONE);
 			}
 		});
 	}
@@ -400,8 +413,6 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		if (updating) {
 			Log.i(TAG, "Upgrade Success Checked.");
 			GetFirmware();
-		} else {
-		
 		}
 	}
 	

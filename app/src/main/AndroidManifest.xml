@@ -27,6 +27,7 @@
             <intent-filter>
                 <action android:name="com.aksys.event.GAMEPAD" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
             </intent-filter>
         </activity>
         <activity android:name=".AboutActivity" android:label="@string/about" android:parentActivityName=".MainActivity"></activity>
