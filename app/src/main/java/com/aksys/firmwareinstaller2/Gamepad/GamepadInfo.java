@@ -277,6 +277,8 @@ public class GamepadInfo {
 		} else {
 			Log.i(TAG, "SendByte: Not Detect Serial Thread / Code: " + Integer.toHexString(b));
 			ConnectionFail();
+			onDisconnectGamepad();
+			onConnectGamepad();
 		}
 	}
 	

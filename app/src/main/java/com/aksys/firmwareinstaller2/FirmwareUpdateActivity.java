@@ -49,6 +49,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	AlertDialog alertDialog;
 	ProgressBar bar;
+	Button buttonRestart;
 	TextView textViewMessage;
 	int sendedbyte = 0;
 	
@@ -83,6 +84,14 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		setContentView( R.layout.activity_firmware_update );
 		context = this;
 		textViewMessage = findViewById(R.id.install_message);
+		buttonRestart = findViewById(R.id.button_restart_action);
+		buttonRestart.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+				startActivity(getIntent());
+			}
+		});
 		bar = findViewById(R.id.progressBar);
 		
 		GamepadList gamepadList = GamepadList.getInstance();
@@ -170,9 +179,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					Button button = findViewById(R.id.button_restart_action);
-					button.setText("RECONNECT");
-					button.setOnClickListener(new View.OnClickListener() {
+					buttonRestart.setText("RECONNECT");
+					buttonRestart.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
 							gamepad.onDisconnectGamepad();
@@ -180,7 +188,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 							CheckDeviceAfterRepaired();
 						}
 					});
-					button.setVisibility(View.VISIBLE);
+					buttonRestart.setVisibility(View.VISIBLE);
 					
 					textViewMessage.setText(R.string.text_recheck_gamepad_status);
 				}
@@ -366,7 +374,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 					}
 				});
 				button.setVisibility(View.VISIBLE);
-				findViewById(R.id.button_restart_action).setVisibility(View.GONE);
+				buttonRestart.setVisibility(View.GONE);
 			}
 		});
 	}
@@ -402,9 +410,12 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		else {
 			/// Connection Fail.
 			gamepad.onDisconnectGamepad();
-			gamepad.removePair();
-			GamepadList.getInstance().checkList();
-			CancelUpdate(getString(R.string.text_gamepad_notfound_desc));
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					textViewMessage.setText("Please Reboot Gamepad and Press 'RESTART'.");
+				}
+			});
 		}
 	}
 	
@@ -464,9 +475,8 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			public void run() {
 				bar.setIndeterminate(true);
 				textViewMessage.setText(R.string.text_gamepad_is_rebooting);
-				Button button = findViewById(R.id.button_restart_action);
-				button.setText("RECONNECT");
-				button.setOnClickListener(new View.OnClickListener() {
+				buttonRestart.setText("RECONNECT");
+				buttonRestart.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						gamepad.onDisconnectGamepad();
@@ -475,7 +485,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 						CheckDeviceAfterRepaired();
 					}
 				});
-				button.setVisibility(View.VISIBLE);
+				buttonRestart.setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -489,15 +499,14 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				bar.setIndeterminate(false);
 				bar.setProgress(0);
 				textViewMessage.setText(R.string.text_firmware_need_power);
-				Button button = findViewById(R.id.button_restart_action);
-				button.setOnClickListener(new View.OnClickListener() {
+				buttonRestart.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						InstallFirmware();
 						findViewById(R.id.button_restart_action).setVisibility(View.GONE);
 					}
 				});
-				button.setVisibility(View.VISIBLE);
+				buttonRestart.setVisibility(View.VISIBLE);
 			}
 		});
 	}

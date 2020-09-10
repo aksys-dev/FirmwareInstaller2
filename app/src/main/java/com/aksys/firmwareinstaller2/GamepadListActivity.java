@@ -235,7 +235,14 @@ public class GamepadListActivity extends AppCompatActivity {
 		} else {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("NO FIRMWARE!");
-			builder.setIcon(R.drawable.ic_download);
+			builder.setMessage("Do you want install Custom Firmware?");
+			builder.setIcon(R.drawable.ic_baseline_insert_drive_file_24);
+			builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					GotoInstallFirmware(targetDevice);
+				}
+			});
 			builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -297,13 +304,11 @@ public class GamepadListActivity extends AppCompatActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch ( item.getItemId() ) {
-			case R.id.menu_bluetooth_setting:
-				startActivity( new Intent( Settings.ACTION_BLUETOOTH_SETTINGS ) );
-				return true;
-			default:
-				return super.onOptionsItemSelected( item );
+		if (item.getItemId() == R.id.menu_bluetooth_setting) {
+			startActivity(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+			return true;
 		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
