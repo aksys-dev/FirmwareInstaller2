@@ -29,6 +29,8 @@ import com.aksys.firmwareinstaller2.Gamepad.GamepadEvent;
 import com.aksys.firmwareinstaller2.Gamepad.GamepadInfo;
 import com.aksys.firmwareinstaller2.Gamepad.GamepadList;
 
+import java.util.Objects;
+
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadInfo.TYPE_AKS_BT;
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
 
@@ -56,8 +58,9 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction() == BluetoothDevice.ACTION_ACL_CONNECTED) {
+			if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_CONNECTED)) {
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				SystemClock.sleep(100);
 				Intent i = CheckBluetooth.CheckBluetoothDevice(device.getName());
 				if (i.getIntExtra( "TYPE", 0 ) == TYPE_AKS_BT ) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName());
@@ -65,9 +68,9 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 					gamepad.onConnectGamepad();
 					CheckDeviceAfterRepaired();
 				}
-			} else if (intent.getAction() == BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+			} else if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				if (device.getAddress() == gamepad.getAddress()) {
+				if (Objects.equals(device.getAddress(), gamepad.getAddress())) {
 					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getAddress());
 					handler.removeCallbacks(PleaseCheckDevice);
 				}
