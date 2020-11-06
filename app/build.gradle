@@ -7,7 +7,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 14
-        versionName "2.5.4 2020-1021"
+        versionName "2.5.4 2020-11-06"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "AKS_Bluetooth", "\"00:1B:29\""
