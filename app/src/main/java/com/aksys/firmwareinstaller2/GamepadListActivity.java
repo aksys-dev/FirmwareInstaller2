@@ -47,7 +47,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		recyclerView = findViewById( R.id.gamepad_listview );
 		recyclerView.setHasFixedSize( true );
 		Log.i(TAG, "onCreate: widthDp: " + getResources().getConfiguration().screenWidthDp);
-		layoutManager = new GridLayoutManager(this, 1 + (getResources().getConfiguration().screenWidthDp / 400) );
+		layoutManager = new GridLayoutManager(this, 1 + (getResources().getConfiguration().screenWidthDp / 600) );
 //		if (getResources().getConfiguration().screenWidthDp / 490 > 1) {
 //
 //		} else {
