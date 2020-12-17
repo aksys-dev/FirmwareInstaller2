@@ -87,9 +87,8 @@ public class GamepadListActivity extends AppCompatActivity {
 		Field[] fields=R.raw.class.getFields();
 		for(int count=0; count < fields.length; count++) {
 			String name = fields[count].getName();
+			Log.i("FWAssets", "Raw Asset: " + name + " // target: " + target);
 			if (name.contains(target + "_")) {
-				Log.i("Raw Asset: ", name);
-				
 				try {
 					resourcelist.add(fields[count].getInt(fields[count]));
 					resourceNameList.add(fields[count].getName());
@@ -265,9 +264,10 @@ public class GamepadListActivity extends AppCompatActivity {
 	}
 	
 	private String checkTargetFWName(String gamepadName) {
-		String[] checklist = getResources().getStringArray(R.array.checklist);
-		for (String s : checklist) {
-			if (gamepadName.toLowerCase().contains(s)) return s;
+		String[] checklist = getResources().getStringArray(R.array.gamepad_list);
+		String[] searchList = getResources().getStringArray(R.array.checklist);
+		for (int index = 0; index < checklist.length; index++) {
+			if (gamepadName.contains(checklist[index])) return searchList[index];
 		}
 		return "Cannot found our brand name.\nif you changed name from app, please reset gamepad first.";
 	}

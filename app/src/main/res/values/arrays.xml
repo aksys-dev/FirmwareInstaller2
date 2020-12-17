@@ -12,6 +12,7 @@
         <item>TIMGamepad v3</item>
         <item>POST gamepad</item>
         <item>topp Gaming Miracle</item>
+        <item>tG Wizard</item>
         <item>tG Miracle</item>
     </string-array>
     <string-array name="checklist">
@@ -27,5 +28,6 @@
         <item>post</item>
         <item>topp</item>
         <item>s3i</item>
+        <item>s5i</item>
     </string-array>
 </resources>
