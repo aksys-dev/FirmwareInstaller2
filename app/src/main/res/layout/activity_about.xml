@@ -40,6 +40,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_version">
+
+        <TextView
+            android:id="@+id/included_file_lists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Firmware Lists." />
+    </ScrollView>
+
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
