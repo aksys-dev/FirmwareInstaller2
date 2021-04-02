@@ -2,6 +2,7 @@ package com.aksys.firmwareinstaller2;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -107,7 +108,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		for (int x = 0; x < size; x++) {
 			list.add(resourceNameList.get(x));
 		}
-		list.add(UseCustomFile);
+		if (BuildConfig.DEBUG) list.add(UseCustomFile);
 		String[] arr = new String[list.size()];
 		arr = list.toArray(arr);
 		return arr;
@@ -214,41 +215,57 @@ public class GamepadListActivity extends AppCompatActivity {
 			GotoInstallFirmware(targetDevice, resourcelist.get(SET_FW_ID));
 		} else if (sizes > 0) {
 			resources = sizes;
-			Log.i(TAG, "ShowTargetFirmware: size = " + sizes);
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(g.getGamepadName() + "\nSelect Firmware");
-			builder.setIcon(R.drawable.ic_download);
-			builder.setItems(getResourcesStringArray(sizes), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					if (i < resourcelist.size()) {
-						SET_FW_ID = i;
-						GotoInstallFirmware(targetDevice, resourcelist.get(i));
-					} else {
-						GotoInstallFirmware(targetDevice);
+			if (!BuildConfig.DEBUG && resources == 1) {
+				GotoInstallFirmware(targetDevice, resourcelist.get(0));
+			} else {
+				Log.i(TAG, "ShowTargetFirmware: size = " + sizes);
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle(g.getGamepadName() + "\nSelect Firmware");
+				builder.setIcon(R.drawable.ic_download);
+				builder.setItems(getResourcesStringArray(sizes), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						if (i < resourcelist.size()) {
+							SET_FW_ID = i;
+							GotoInstallFirmware(targetDevice, resourcelist.get(i));
+						} else {
+							GotoInstallFirmware(targetDevice);
+						}
 					}
-				}
-			});
-			AlertDialog alertDialog = builder.create();
-			alertDialog.show();
+				});
+				AlertDialog alertDialog = builder.create();
+				alertDialog.show();
+			}
 		} else {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("NO FIRMWARE!");
-			builder.setMessage("Do you want install Custom Firmware?");
 			builder.setIcon(R.drawable.ic_baseline_insert_drive_file_24);
-			builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					GotoInstallFirmware(targetDevice);
-				}
-			});
-			builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-					finish();
-				}
-			});
+			if (BuildConfig.DEBUG) {
+				builder.setMessage("Do you want install Custom Firmware?");
+				builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						GotoInstallFirmware(targetDevice);
+					}
+				});
+				builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						finish();
+					}
+				});
+			}
+			else {
+				builder.setMessage("Cannot provide firmware for this product.\nPlease connect another product.");
+				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						finish();
+					}
+				});
+			}
 			AlertDialog alertDialog = builder.create();
 			alertDialog.show();
 		}

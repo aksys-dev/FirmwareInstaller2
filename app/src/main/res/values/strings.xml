@@ -112,12 +112,12 @@
     <string name="firmware_update_completed_desc">The firmware update is complete.\n\nResult ---\nGamepad Name: %s\nInstalled Firmware: %s\n\nPress CLOSE to unpair the gamepad.</string>
     <string name="text_recheck_gamepad_status">Now Re-checking Device Status.</string>
     <string name="text_search_file">Search File</string>
-    <string name="text_now_installing">Installing... %2.0f%%\n</string>
+    <string name="text_now_installing">Installing…\n</string>
     <string name="text_gamepad_is_rebooting">Your device will turn back on soon.\n\nIf you can\'t wait for the device to turn on automatically, Press Home button, force close this app, and press reset button in device.</string>
-    <string name="text_reconnecting">Re-connecting...</string>
+    <string name="text_reconnecting">Re-connecting…</string>
     <string name="text_window_mode_information">This gamepad is set to windowed mode.\nTo use this device, press the LB + Select Please pairing again.</string>
     <string name="text_request_gamepad">Do you want to reconnect gamepad?</string>
-    <string name="text_waiting_connection">Waiting connection...</string>
+    <string name="text_waiting_connection">Waiting connection…</string>
     <string name="title_option_obutton">Option O-Button</string>
     <string name="title_setting_turbo_button">Setting Turbo Keys</string>
     <string name="text_firmware_need_power">You need to charge the gamepad to get started.\nPlease connect the cable.</string>

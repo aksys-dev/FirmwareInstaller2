@@ -517,8 +517,6 @@ public class GamepadInfo {
 		synchronized void StartCommand() {
 			UpdateComplete();
 			CheckFirmware();
-			CheckBattery();
-			CheckDeviceCode();
 		}
 		
 		@Override

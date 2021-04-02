@@ -34,12 +34,9 @@ import java.util.Objects;
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadInfo.TYPE_AKS_BT;
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
 
-
 public class FirmwareUpdateActivity extends AppCompatActivity implements GamepadEvent {
 	final String TAG = "FWUpdate";
 	static final int INTENT_REQUEST = 7025;
-	static final int INTENT_UPDATE_COMPLETE = 4765;
-	static final int INTENT_UPDATE_FAILURE = 4766;
 	static GamepadInfo gamepad;
 	
 	Context context;
@@ -456,7 +453,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	public void GetFirmware() {
 		if (updating) {
 			Log.i(TAG, "Firmware Value Detected. " + gamepad.getFirmware() + " target: " + AppFW.getFirmwareVersion());
-			if (gamepad.getFirmware() == "1" || gamepad.getFirmwareInt() == -1) {
+			if (gamepad.getFirmware().equals("1") || gamepad.getFirmwareInt() == -1) {
 				gamepad.CheckFirmware();
 			} else {
 				FinishUpdate();
@@ -466,10 +463,11 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	
 	@Override
 	public void GetBattery() {
+		final float battery = gamepad.getBattery();
 		if (updating) {
-			Log.i(TAG, "Battery Value Detected. " + gamepad.getBattery());
+			Log.i(TAG, "Battery Value Detected. " + battery);
 		}
-		else if (gamepad.getBattery() < 5000) {
+		else if (battery < 5000) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
@@ -487,6 +485,9 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				}
 			});
 		}
+		else if (battery > 5000) {
+			InstallFirmware();
+		}
 //		else if (AppFW.getFilebyteArray() != null) {
 //			InstallFirmware();
 //		}
@@ -501,7 +502,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				bar.setIndeterminate(false);
 				bar.setMax(AppFW.getFilesize());
 				bar.setProgress(sendedbyte);
-				textViewMessage.setText(String.format(getString(R.string.text_now_installing), (float)(sendedbyte * 100 /AppFW.getFilesize())) + getString(R.string.text_now_firmware_installing));
+				textViewMessage.setText(getString(R.string.text_now_installing) + getString(R.string.text_now_firmware_installing));
 			}
 		});
 	}
