@@ -211,6 +211,7 @@ public class GamepadInfo {
 	
 	public void onServiceHold(boolean hold) { ServiceHold = hold; }
 	public synchronized void onConnectGamepad() {
+		Log.i(TAG, "onConnectGamepad: is already connect? " + (connectThread != null));
 		if ( connectThread == null ) {
 			connectThread = new ConnectThread();
 			connectThread.start();
@@ -603,8 +604,8 @@ public class GamepadInfo {
 							Log.d( TAG, "Firmware: CMD_PARTITION_VERIFY_SUCCESS" );
 							status = STATUS_COMPLETE;
 							//addMessage += "*** Install Completed!";
-							FirmwareInstalled();
 							onDisconnectGamepad();
+							FirmwareInstalled();
 						}
 						else if ( recv[INDEX_CMD] == CMD_CHECK_GAMEPAD_INFO ) {
 							Log.i(TAG, String.format( "DEVICE: %02x %02x" , recv[3], recv[4] ) );

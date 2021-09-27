@@ -13,18 +13,18 @@ public class FirmwareFile {
 	AppCompatActivity responseActivity;
 	String TAG = "FWFile";
 	int filename;
-	int filesize;
-	byte[] filebyteArray;
+	int fileSize;
+	byte[] fileByteArray;
 	
 	public FirmwareFile(AppCompatActivity activity) {
 		filename = 0;
-		filesize = 0;
-		filebyteArray = null;
+		fileSize = 0;
+		fileByteArray = null;
 		responseActivity = activity;
 	}
 	
-	public boolean setFile(int rawfile) {
-		InputStream file = responseActivity.getResources().openRawResource( rawfile );
+	public boolean setFile(int raw) {
+		InputStream file = responseActivity.getResources().openRawResource( raw );
 		return setFileDirect( file );
 	}
 	
@@ -51,22 +51,22 @@ public class FirmwareFile {
 	public boolean setFileDirect(InputStream inputStream) {
 		try {
 			int len = inputStream.available();
-			filebyteArray = new byte[len];
-			filesize = inputStream.read( filebyteArray );
-			String name = new String(filebyteArray, 2, 6);
+			fileByteArray = new byte[len];
+			fileSize = inputStream.read(fileByteArray);
+			String name = new String(fileByteArray, 2, 6);
 			filename = Integer.parseInt( name );
 			Log.d( TAG, "setFile: " + filename + " / size =" + len );
 			inputStream.close();
 			return true;
 		} catch (Exception e) {
-			Log.w( TAG, "getFile: Cannot read fiile " +e.getMessage()  );
+			Log.w( TAG, "getFile: Cannot read file " +e.getMessage()  );
 			return false;
 		}
 	}
 	
-	public byte[] getFilebyteArray() { return filebyteArray; }
+	public byte[] getFileByteArray() { return fileByteArray; }
 	public int getFirmwareVersion() { return filename; }
-	public int getFilesize() {
-		return filesize;
+	public int getFileSize() {
+		return fileSize;
 	}
 }

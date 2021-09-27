@@ -22,7 +22,7 @@
         </activity>
         <activity android:name=".GamepadListActivity" android:label="@string/title_activity_gamepad_list"></activity>
         <activity android:name=".FirmwareUpdateActivity" android:label="@string/firmware_update"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden|keyboard">
             <intent-filter>
                 <action android:name="com.aksys.event.GAMEPAD" />

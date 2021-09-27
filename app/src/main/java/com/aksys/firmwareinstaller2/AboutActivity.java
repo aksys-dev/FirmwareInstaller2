@@ -40,7 +40,7 @@ public class AboutActivity extends AppCompatActivity {
 		super.onStart();
 		TextView fileListView = findViewById(R.id.included_file_lists);
 		StringBuilder fileNames = new StringBuilder();
-		Field[] fields=R.raw.class.getFields();
+		Field[] fields = R.raw.class.getFields();
 		for (Field field : fields) {
 			String name = field.getName();
 			Log.i("Raw Asset: ", name);
