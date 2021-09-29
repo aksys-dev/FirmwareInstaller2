@@ -266,7 +266,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			gamepad.CheckFirmware();
 			CheckDevice();
 		} else {
-		
+			//// Maybe Gamepad Re-Connected.
 		}
 		if (gamepad != null) gamepad.setGamepadId();
 	}
