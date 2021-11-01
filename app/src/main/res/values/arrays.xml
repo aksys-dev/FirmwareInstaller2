@@ -24,6 +24,7 @@
         <item>topp Gaming Miracle</item>
         <item>tG Wizard</item>
         <item>tG Medusa</item>
+        <item>JGC100</item>
     </string-array>
     <string-array name="checklist">
         <item>v2</item>
@@ -49,5 +50,6 @@
         <item>topp</item>
         <item>s3i</item>
         <item>s5i</item>
+        <item>jgc100</item>
     </string-array>
 </resources>
