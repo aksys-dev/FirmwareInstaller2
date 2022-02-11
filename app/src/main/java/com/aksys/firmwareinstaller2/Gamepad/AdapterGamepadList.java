@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aksys.firmwareinstaller2.BuildConfig;
 import com.aksys.firmwareinstaller2.R;
 
 import java.util.ArrayList;

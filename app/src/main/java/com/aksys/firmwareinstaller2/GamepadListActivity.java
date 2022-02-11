@@ -65,12 +65,12 @@ public class GamepadListActivity extends AppCompatActivity {
 		resourceNameList = new ArrayList<>();
 		
 		Field[] fields=R.raw.class.getFields();
-		for(int count=0; count < fields.length; count++){
-			String name = fields[count].getName();
+		for (Field field : fields) {
+			String name = field.getName();
 			Log.i("Raw Asset: ", name);
 			try {
-				resourcelist.add(fields[count].getInt(fields[count]));
-				resourceNameList.add(fields[count].getName());
+				resourcelist.add(field.getInt(field));
+				resourceNameList.add(field.getName());
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -86,13 +86,13 @@ public class GamepadListActivity extends AppCompatActivity {
 		resourceNameList.clear();
 		
 		Field[] fields=R.raw.class.getFields();
-		for(int count=0; count < fields.length; count++) {
-			String name = fields[count].getName();
+		for (Field field : fields) {
+			String name = field.getName();
 			Log.i("FWAssets", "Raw Asset: " + name + " // target: " + target);
 			if (name.contains(target + "_")) {
 				try {
-					resourcelist.add(fields[count].getInt(fields[count]));
-					resourceNameList.add(fields[count].getName());
+					resourcelist.add(field.getInt(field));
+					resourceNameList.add(field.getName());
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}

@@ -218,6 +218,8 @@ public class GamepadInfo {
 		}
 		else if (serialThread != null) {
 			serialThread.StartCommand();
+		} else {
+			gamepadEvent.ConnectionSuccess();
 		}
 	}
 	
