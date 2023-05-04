@@ -1,7 +1,11 @@
 package com.aksys.firmwareinstaller2.Gamepad;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 
 import com.aksys.firmwareinstaller2.BuildConfig;
 
@@ -11,21 +15,20 @@ import static com.aksys.firmwareinstaller2.Gamepad.GamepadInfo.TYPE_AKS_BT;
 
 public class GamepadList {
 	private static final GamepadList ourInstance = new GamepadList();
-	
+
 	public static GamepadList getInstance() {
 		return ourInstance;
 	}
-	
+
 	public static int SET_FW_ID = -1;
-	
+
 	ArrayList<GamepadInfo> GAMEPAD_LIST;
-	
+
 	private GamepadList() {
-		GAMEPAD_LIST = new ArrayList<>(  );
-		checkList();
+		GAMEPAD_LIST = new ArrayList<>();
 	}
-	
-	public void checkList() {
+
+	public void checkList(Context context) {
 		GAMEPAD_LIST.clear();
 //		int[] deviceIDs = InputDevice.getDeviceIds();
 //		for (int deviceID : deviceIDs) {
@@ -45,19 +48,28 @@ public class GamepadList {
 //				}
 //			}
 //		}
-		for (BluetoothDevice device : BluetoothAdapter.getDefaultAdapter().getBondedDevices()) {
-			if (!device.getAddress().contains(BuildConfig.AKS_Bluetooth)) continue;
-			
-			GamepadInfo gamepadInfo = new GamepadInfo(-1, device.getName());
-			gamepadInfo.setBondStatus(device.getBondState());
-			gamepadInfo.setAddress(device.getAddress());
-			gamepadInfo.connectAKSGamepad(CheckBluetooth.getDevices(device.getName()));
-			gamepadInfo.setConnectType(TYPE_AKS_BT);
-			GAMEPAD_LIST.add(gamepadInfo);
-			
+
+		if (checkBluetoothPermission(context)) {
+			for (BluetoothDevice device : BluetoothAdapter.getDefaultAdapter().getBondedDevices()) {
+				if (!device.getAddress().contains(BuildConfig.AKS_Bluetooth)) continue;
+
+				GamepadInfo gamepadInfo = new GamepadInfo(-1, device.getName());
+				gamepadInfo.setBondStatus(device.getBondState());
+				gamepadInfo.setAddress(device.getAddress());
+				gamepadInfo.connectAKSGamepad(CheckBluetooth.getDevices(device.getName()));
+				gamepadInfo.setConnectType(TYPE_AKS_BT);
+				GAMEPAD_LIST.add(gamepadInfo);
+
+			}
 		}
 	}
-	
+
+	public static boolean checkBluetoothPermission(Context context) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			return context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED;
+		} else return true;
+	}
+
 	public ArrayList<GamepadInfo> getList() { return GAMEPAD_LIST; }
 	
 	public GamepadInfo getIndex(int index) {

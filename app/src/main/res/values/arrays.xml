@@ -18,6 +18,9 @@
         <item>SHAKS S5s</item>
         <item>SHAKS S5b</item>
         <item>SHAKS S5</item>
+        <item>SHAKS S6i</item>
+        <item>SHAKS S6s</item>
+        <item>SHAKS S6b</item>
         <item>SHAKS S6</item>
         <item>PartnerTV Gamepad</item>
         <item>TIMGamepad v3</item>
@@ -26,6 +29,7 @@
         <item>tG Wizard</item>
         <item>tG Medusa</item>
         <item>JGC100</item>
+        <item>JioController</item>
     </string-array>
     <string-array name="checklist">
         <item>v2</item>
@@ -56,5 +60,6 @@
         <item>s3i</item>
         <item>s5i</item>
         <item>jgc100</item>
+        <item>jio</item>
     </string-array>
 </resources>

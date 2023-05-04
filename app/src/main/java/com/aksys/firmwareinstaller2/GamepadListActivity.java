@@ -88,7 +88,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		Field[] fields=R.raw.class.getFields();
 		for (Field field : fields) {
 			String name = field.getName();
-			Log.i("FWAssets", "Raw Asset: " + name + " // target: " + target);
+			Log.i("FWAssets", "Raw Asset: " + name + " // target: " + target + " = " + name.contains(target + "_"));
 			if (name.contains(target + "_")) {
 				try {
 					resourcelist.add(field.getInt(field));
@@ -117,7 +117,7 @@ public class GamepadListActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		gamepadList.checkList();
+		gamepadList.checkList(this);
 		ShowGamepadLists(false);
 	}
 	
@@ -242,28 +242,17 @@ public class GamepadListActivity extends AppCompatActivity {
 			builder.setIcon(R.drawable.ic_baseline_insert_drive_file_24);
 			if (BuildConfig.DEBUG) {
 				builder.setMessage("Do you want install Custom Firmware?");
-				builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						GotoInstallFirmware(targetDevice);
-					}
-				});
-				builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						finish();
-					}
+				builder.setPositiveButton(android.R.string.yes, (dialog, which) -> GotoInstallFirmware(targetDevice));
+				builder.setNegativeButton(android.R.string.no, (dialog, which) -> {
+					dialog.dismiss();
+					finish();
 				});
 			}
 			else {
 				builder.setMessage("Cannot provide firmware for this product.\nPlease connect another product.");
-				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						finish();
-					}
+				builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+					dialog.dismiss();
+					finish();
 				});
 			}
 			AlertDialog alertDialog = builder.create();

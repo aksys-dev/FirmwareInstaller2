@@ -402,7 +402,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 					gamepad.onDisconnectGamepad();
 					gamepad.removePair();
 					CancelUpdate("Gamepad is Disconnected!\nPlease Reset this gamepad and repair gamepad.", "WARNING!");
-					GamepadList.getInstance().checkList();
+					GamepadList.getInstance().checkList(this);
 				}
 			});
 		}
