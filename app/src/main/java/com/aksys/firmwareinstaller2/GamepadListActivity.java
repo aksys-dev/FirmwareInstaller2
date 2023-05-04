@@ -108,7 +108,7 @@ public class GamepadListActivity extends AppCompatActivity {
 		for (int x = 0; x < size; x++) {
 			list.add(resourceNameList.get(x));
 		}
-		if (BuildConfig.DEBUG) list.add(UseCustomFile);
+		list.add(UseCustomFile);
 		String[] arr = new String[list.size()];
 		arr = list.toArray(arr);
 		return arr;

@@ -18,6 +18,7 @@
         <item>SHAKS S5s</item>
         <item>SHAKS S5b</item>
         <item>SHAKS S5</item>
+        <item>SHAKS S6</item>
         <item>PartnerTV Gamepad</item>
         <item>TIMGamepad v3</item>
         <item>POST gamepad</item>
@@ -44,6 +45,10 @@
         <item>s5s</item>
         <item>s5b</item>
         <item>s5</item>
+        <item>s6i</item>
+        <item>s6s</item>
+        <item>s6b</item>
+        <item>s6</item>
         <item>partner</item>
         <item>v3</item>
         <item>post</item>
