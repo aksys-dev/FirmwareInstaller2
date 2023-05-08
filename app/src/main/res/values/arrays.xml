@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--  gamepad_list 와 checklist 의 열 수가 동일해야 합니다.
+ checklist 에서는 파일명 주요 텍스트를 검증하도록 하고 있음! -->
     <string-array name="gamepad_list">
         <item>TIMGamepad v2</item>
         <item>SHAKS S2i</item>
