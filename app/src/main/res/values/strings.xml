@@ -81,7 +81,7 @@
     <string name="text_gamepad_notfound">Gamepad Not Found</string>
     <string name="text_gamepad_notfound_desc">Sorry!\nGamepad not found.\nBack to Gamepad List.</string>
     <string name="intent_reinstall" translatable="false">reinstall</string>
-    <string name="question_firmware_install">Do you want to install firmware?\nVersion: %s\nDevice: %s</string>
+    <string name="question_firmware_install">Do you want to install firmware?\nVersion: %d\nDevice: %s</string>
     <string name="question_firmware_reinstall">Do you want to install the firmware(%s) again? Sometimes you can press the reset button on the back of the gamepad to fix the problem.</string>
     <string name="alert_file_notfound">Not Found Firmware.\nCancel update?</string>
     <string name="firmware_reinstall">Firmware Re-install</string>
@@ -122,4 +122,6 @@
     <string name="title_setting_turbo_button">Setting Turbo Keys</string>
     <string name="text_firmware_need_power">You need to charge the gamepad to get started.\nPlease connect the cable.</string>
     <string name="ok">OK</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="format_cancel_install_message">not want to install firmware.\nVersion: %d\nDevice: %s</string>
 </resources>

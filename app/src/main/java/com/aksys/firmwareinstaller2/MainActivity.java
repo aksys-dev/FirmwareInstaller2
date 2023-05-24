@@ -1,15 +1,22 @@
 package com.aksys.firmwareinstaller2;
 
+import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.checkBluetoothPermission;
+
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 	final String TAG = "GamepadUtility";
 	View clickedView;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,25 +25,40 @@ public class MainActivity extends AppCompatActivity {
 		TextView view = findViewById(R.id.application_version);
 		view.setText(BuildConfig.VERSION_NAME);
 	}
-	
+
+	ActivityResultLauncher<String> getPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
+		if (result) {
+			Intent intent = new Intent(MainActivity.this, GamepadListActivity.class);
+			startActivity(intent);
+		}
+	});
+
 	public void onClick(View view) {
 		clickedView = view;
 		if (view.getId() == R.id.detect_gamepad) {
-			Intent intent = new Intent( MainActivity.this, GamepadListActivity.class );
-			startActivity( intent );
+			if (checkBluetoothPermission(this)) {
+				Intent intent = new Intent(MainActivity.this, GamepadListActivity.class);
+				startActivity(intent);
+			} else {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+					getPermission.launch(Manifest.permission.BLUETOOTH_CONNECT);
+				}
+			}
 		}
 		else if (view.getId() == R.id.about_app) {
 			Intent intent = new Intent( MainActivity.this, AboutActivity.class );
 			startActivity( intent );
 		}
 		view.setEnabled(false);
-		view.getHandler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				clickedView.setEnabled(true);
-			}
-		}, 500);
+		view.getHandler().postDelayed(() -> clickedView.setEnabled(true), 500);
 	}
+
+//	private ActivityResultRegistry bluetoothCallback = new ActivityResultRegistry() {
+//		@Override
+//		public <I, O> void onLaunch(int requestCode, @NonNull ActivityResultContract<I, O> contract, I input, @Nullable ActivityOptionsCompat options) {
+//
+//		}
+//	};
 //
 //	@Override
 //	public boolean onCreateOptionsMenu(Menu menu) {

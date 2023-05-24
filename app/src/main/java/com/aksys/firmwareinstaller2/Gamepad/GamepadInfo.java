@@ -1,5 +1,6 @@
 package com.aksys.firmwareinstaller2.Gamepad;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
@@ -391,6 +392,7 @@ public class GamepadInfo {
 			}
 	}
 	
+	@SuppressLint("MissingPermission")
 	class ConnectThread extends Thread {
 		ConnectThread() {
 			BluetoothSocket tmp = null;

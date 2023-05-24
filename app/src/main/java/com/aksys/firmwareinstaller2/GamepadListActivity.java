@@ -1,8 +1,8 @@
 package com.aksys.firmwareinstaller2;
 
-import android.content.DialogInterface;
+import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
+
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -23,8 +23,6 @@ import com.aksys.firmwareinstaller2.Gamepad.GamepadList;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
 
 public class GamepadListActivity extends AppCompatActivity {
 	final String TAG = "GamepadUtility";
@@ -57,11 +55,11 @@ public class GamepadListActivity extends AppCompatActivity {
 		recyclerView.setLayoutManager( layoutManager );
 	}
 	
-	List<Integer> resourcelist;
+	List<Integer> resourceList;
 	List<String> resourceNameList;
 	
-	int CheckResourceList() {
-		resourcelist = new ArrayList<>();
+	int checkResourceList() {
+		resourceList = new ArrayList<>();
 		resourceNameList = new ArrayList<>();
 		
 		Field[] fields=R.raw.class.getFields();
@@ -69,20 +67,20 @@ public class GamepadListActivity extends AppCompatActivity {
 			String name = field.getName();
 			Log.i("Raw Asset: ", name);
 			try {
-				resourcelist.add(field.getInt(field));
+				resourceList.add(field.getInt(field));
 				resourceNameList.add(field.getName());
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
-		return resourcelist.size();
+		return resourceList.size();
 	}
 	
-	int CheckResourceList(String target) {
-		resourcelist = new ArrayList<>();
+	int checkResourceList(String target) {
+		resourceList = new ArrayList<>();
 		resourceNameList = new ArrayList<>();
 		
-		resourcelist.clear();
+		resourceList.clear();
 		resourceNameList.clear();
 		
 		Field[] fields=R.raw.class.getFields();
@@ -91,14 +89,14 @@ public class GamepadListActivity extends AppCompatActivity {
 			Log.i("FWAssets", "Raw Asset: " + name + " // target: " + target + " = " + name.contains(target + "_"));
 			if (name.contains(target + "_")) {
 				try {
-					resourcelist.add(field.getInt(field));
+					resourceList.add(field.getInt(field));
 					resourceNameList.add(field.getName());
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		return resourcelist.size();
+		return resourceList.size();
 	}
 	
 	String UseCustomFile = "Use Custom Firmware Files";
@@ -127,31 +125,25 @@ public class GamepadListActivity extends AppCompatActivity {
 		gamepadList.AllBluetoothConnectionClose();
 	}
 	
-	void ShowGamepadLists(boolean allgamepads) {
+	void ShowGamepadLists(boolean allGamepads) {
 		// ALREADY in GamepadService
 		AdapterGamepadList adapterGamepadList;
 		/// TODO: Get ArrayList from Service
-		adapterGamepadList = new AdapterGamepadList( gamepadList.getList(), allgamepads);
+		adapterGamepadList = new AdapterGamepadList( gamepadList.getList(), allGamepads);
 		recyclerView.setAdapter( adapterGamepadList );
 		
-		if (gamepadList.getCounts(allgamepads) == 0) {
+		if (gamepadList.getCounts(allGamepads) == 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.title_no_gamepad);
 			builder.setIcon(R.drawable.ic_gamepaddisconnect);
 			builder.setMessage(R.string.text_no_gamepad_description);
-			builder.setPositiveButton(R.string.text_connect_bluetooth, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					dialogInterface.dismiss();
-					startActivity( new Intent( Settings.ACTION_BLUETOOTH_SETTINGS ) );
-				}
+			builder.setPositiveButton(R.string.text_connect_bluetooth, (dialogInterface, i) -> {
+				dialogInterface.dismiss();
+				startActivity( new Intent( Settings.ACTION_BLUETOOTH_SETTINGS ) );
 			});
-			builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i) {
-					dialogInterface.dismiss();
-					finish();
-				}
+			builder.setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> {
+				dialogInterface.dismiss();
+				finish();
 			});
 			AlertDialog alertDialog = builder.create();
 			alertDialog.show();
@@ -171,7 +163,7 @@ public class GamepadListActivity extends AppCompatActivity {
 //
 //				} else {
 //					//// Auto Select before installed FW.
-//					GotoInstallFirmware(x, resourcelist.get(SET_FW_ID));
+//					GotoInstallFirmware(x, resourceList.get(SET_FW_ID));
 //				}
 			} else {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -181,56 +173,38 @@ public class GamepadListActivity extends AppCompatActivity {
 						gamepadList.getIndex(x).getGamepadName().replace(" ", "^"),
 						checkTargetBrand(gamepadList.getIndex(x).getGamepadName())
 				));
-				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				builder.setNeutralButton("Continue Install", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						ShowTargetFirmware(x);
-					}
-				});
+				builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+				builder.setNeutralButton("Continue Install", (dialog, which) -> ShowTargetFirmware(x));
 				AlertDialog alertDialog = builder.create();
 				alertDialog.show();
 			}
 		}
 		view.setEnabled(false);
-		view.getHandler().postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				clickedView.setEnabled(true);
-			}
-		}, 500);
+		view.getHandler().postDelayed(() -> clickedView.setEnabled(true), 500);
 	}
 	
 	int targetDevice = -1;
 	void ShowTargetFirmware(int x) {
 		targetDevice = x;
 		GamepadInfo g = gamepadList.getIndex(targetDevice);
-		int sizes = CheckResourceList(checkTargetFWName(g.getGamepadName()));
+		int sizes = checkResourceList(checkTargetFWName(g.getGamepadName()));
 		if (resources == sizes && SET_FW_ID > -1) {
-			GotoInstallFirmware(targetDevice, resourcelist.get(SET_FW_ID));
+			GotoInstallFirmware(targetDevice, resourceList.get(SET_FW_ID));
 		} else if (sizes > 0) {
 			resources = sizes;
 			if (!BuildConfig.DEBUG && resources == 1) {
-				GotoInstallFirmware(targetDevice, resourcelist.get(0));
+				GotoInstallFirmware(targetDevice, resourceList.get(0));
 			} else {
 				Log.i(TAG, "ShowTargetFirmware: size = " + sizes);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(g.getGamepadName() + "\nSelect Firmware");
 				builder.setIcon(R.drawable.ic_download);
-				builder.setItems(getResourcesStringArray(sizes), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						if (i < resourcelist.size()) {
-							SET_FW_ID = i;
-							GotoInstallFirmware(targetDevice, resourcelist.get(i));
-						} else {
-							GotoInstallFirmware(targetDevice);
-						}
+				builder.setItems(getResourcesStringArray(sizes), (dialogInterface, i) -> {
+					if (i < resourceList.size()) {
+						SET_FW_ID = i;
+						GotoInstallFirmware(targetDevice, resourceList.get(i));
+					} else {
+						GotoInstallFirmware(targetDevice);
 					}
 				});
 				AlertDialog alertDialog = builder.create();

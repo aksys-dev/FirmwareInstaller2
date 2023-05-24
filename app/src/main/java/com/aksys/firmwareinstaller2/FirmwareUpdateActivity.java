@@ -1,6 +1,7 @@
 package com.aksys.firmwareinstaller2;
 
 import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.SET_FW_ID;
+import static com.aksys.firmwareinstaller2.Gamepad.GamepadList.checkBluetoothPermission;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
@@ -21,6 +22,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -52,26 +56,27 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_CONNECTED)) {
-				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				SystemClock.sleep(100);
-				if (device != null && device.getAddress().startsWith("00:1B:29")) {
-					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName() + " @ STATE: " + device.getBondState());
-					gamepad.connectAKSGamepad(device);
-					gamepad.onConnectGamepad();
-					CheckDeviceAfterRepaired();
-				}
-			} else if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
-				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				if (device != null && Objects.equals(device.getAddress(), gamepad.getAddress())) {
-					Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getAddress());
-					handler.removeCallbacks(PleaseCheckDevice);
+			if (checkBluetoothPermission(context)) {
+				if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_CONNECTED)) {
+					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+					SystemClock.sleep(100);
+					if (device != null && device.getAddress().startsWith("00:1B:29")) {
+						Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getName() + " @ STATE: " + device.getBondState());
+						gamepad.connectAKSGamepad(device);
+						gamepad.onConnectGamepad();
+						CheckDeviceAfterRepaired();
+					}
+				} else if (Objects.equals(intent.getAction(), BluetoothDevice.ACTION_ACL_DISCONNECTED)) {
+					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+					if (device != null && Objects.equals(device.getAddress(), gamepad.getAddress())) {
+						Log.i(TAG, "onReceive: " + intent.getAction() + " / " + device.getAddress());
+						handler.removeCallbacks(PleaseCheckDevice);
+					}
 				}
 			}
 		}
 	};
-	
-	int newFirmware = -1;
+
 	boolean needRepair = false;
 	
 	@Override
@@ -170,19 +175,16 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			gamepad.setGamepadEvent(this);
 			Log.i( TAG, "CheckDeviceAfterRepaired" );
 			
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					buttonRestart.setText("RECONNECT");
-					buttonRestart.setOnClickListener(v -> {
-						Log.i(TAG, "onClick: " + buttonRestart.getText() + " from CheckDeviceAfterRepaired()");
-						gamepad.onDisconnectGamepad();
-						SystemClock.sleep(100);
-					});
-					buttonRestart.setVisibility(View.VISIBLE);
-					
-					textViewMessage.setText(R.string.text_recheck_gamepad_status);
-				}
+			handler.post(() -> {
+				buttonRestart.setText(R.string.reconnect);
+				buttonRestart.setOnClickListener(v -> {
+					Log.i(TAG, "onClick: " + buttonRestart.getText() + " from CheckDeviceAfterRepaired()");
+					gamepad.onDisconnectGamepad();
+					SystemClock.sleep(100);
+				});
+				buttonRestart.setVisibility(View.VISIBLE);
+
+				textViewMessage.setText(R.string.text_recheck_gamepad_status);
 			});
 //			handler.postDelayed(PleaseCheckDevice,10000);
 		}
@@ -218,6 +220,11 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 //		alertDialog = builder.create();
 //		alertDialog.show();
 //	}
+
+	ActivityResultLauncher<String> getFirmwareFile = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+		Log.i(TAG,  String.format("registerForActivityResult: Loaded Firmware File. = %s", uri));
+		if (uri != null && AppFW.setFile(uri)) CheckStatus();
+	});
 	
 	void GetFirmwareFile() {
 		if (alertDialog != null) {
@@ -236,17 +243,14 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				CancelUpdate("Not Found target firmware file.");
 			}
 		} else {
-			Intent i = new Intent( Intent.ACTION_OPEN_DOCUMENT );
-			i.addCategory( Intent.CATEGORY_OPENABLE );
-			i.setType( "*/*" );
-			startActivityForResult( i, INTENT_REQUEST );
+			getFirmwareFile.launch("*/*");
 		}
 	}
 	
 	@Override
-	public void onConfigurationChanged(Configuration configuration ) {
+	public void onConfigurationChanged(@NonNull Configuration configuration ) {
 		super.onConfigurationChanged( configuration );
-		Log.i( TAG, "onConfigurationChanged\n" + configuration.toString() );
+		Log.i( TAG, "onConfigurationChanged\n" + configuration);
 		
 //		if (gamepad.getBondStatus() >= GamepadInfo.STATUS_WRITING) updating = true;
 		if (!updating) {
@@ -269,19 +273,11 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			builder.setIcon( R.drawable.ic_download );
 			builder.setTitle( R.string.firmware_update );
 			builder.setMessage( getString(R.string.alert_file_notfound));
-			builder.setPositiveButton( android.R.string.cancel, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.dismiss();
-					CancelUpdate("selected Cancel because not found firmware");
-				}
-			} );
-			builder.setNegativeButton( R.string.text_search_file, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					GetFirmware();
-				}
-			} );
+			builder.setPositiveButton( android.R.string.cancel, (dialog, which) -> {
+				dialog.dismiss();
+				CancelUpdate("selected Cancel because not found firmware");
+			});
+			builder.setNegativeButton( R.string.text_search_file, (dialog, which) -> GetFirmware());
 		}
 		else if (!updating) {
 			/// File is Correct
@@ -289,24 +285,16 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 			needRepair = true;
 			
 			builder.setTitle(R.string.firmware_update);
-			builder.setMessage(String.format(getString(R.string.question_firmware_install), String.valueOf(AppFW.getFirmwareVersion()), gamepad.getGamepadName()));
-			
+			builder.setMessage(String.format(getString(R.string.question_firmware_install), AppFW.getFirmwareVersion(), gamepad.getGamepadName()));
+
 			builder.setCancelable(false);
-			
-			builder.setPositiveButton( android.R.string.ok, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					InstallFirmware();
-				}
-			} );
-			builder.setNegativeButton( android.R.string.cancel, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					SET_FW_ID = -1;
-					dialog.dismiss();
-					CancelUpdate(String.format("not want to install firmware.\nVersion: %d\nDevice: %s", AppFW.getFirmwareVersion(), gamepad.getGamepadName()));
-				}
-			} );
+
+			builder.setPositiveButton( android.R.string.ok, (dialog, which) -> InstallFirmware());
+			builder.setNegativeButton( android.R.string.cancel, (dialog, which) -> {
+				SET_FW_ID = -1;
+				dialog.dismiss();
+				CancelUpdate(String.format(getString(R.string.format_cancel_install_message), AppFW.getFirmwareVersion(), gamepad.getGamepadName()));
+			});
 		}
 		alertDialog = builder.create();
 		alertDialog.show();
