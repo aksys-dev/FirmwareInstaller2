@@ -7,7 +7,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 22
-        versionName "2.9 2023-05-24"
+        versionName "2.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "AKS_Bluetooth", "\"00:1B:29\""

@@ -51,7 +51,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	ProgressBar bar;
 	Button buttonRestart;
 	TextView textViewMessage;
-	int sendedbyte = 0;
+	int sentByte = 0;
 	
 	BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -422,12 +422,9 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 				runOnUiThread(() -> {
 					Button buttonClear = findViewById(R.id.button_clear_action);
 					buttonClear.setText("RE-INSTALL");
-					buttonClear.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							updating = false;
-							InstallFirmware();
-						}
+					buttonClear.setOnClickListener(v -> {
+						updating = false;
+						InstallFirmware();
 					});
 				});
 			}
@@ -462,12 +459,12 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 	}
 	
 	@Override
-	public void SendingFirmware(final int sendbytes) {
+	public void SendingFirmware(final int sendBytes) {
 		handler.post(() -> {
-			sendedbyte += sendbytes;
+			sentByte += sendBytes;
 			bar.setIndeterminate(false);
 			bar.setMax(AppFW.getFileSize());
-			bar.setProgress(sendedbyte);
+			bar.setProgress(sentByte);
 			textViewMessage.setText(getString(R.string.text_now_installing) + getString(R.string.text_now_firmware_installing));
 		});
 	}
@@ -483,7 +480,7 @@ public class FirmwareUpdateActivity extends AppCompatActivity implements Gamepad
 		handler.post(() -> {
 			bar.setIndeterminate(true);
 			textViewMessage.setText(R.string.text_gamepad_is_rebooting);
-			buttonRestart.setText("RECONNECT");
+			buttonRestart.setText(R.string.reconnect);
 			buttonRestart.setOnClickListener(v -> {
 				Log.i(TAG, "onClick: " + buttonRestart.getText() + " from FirmwareInstalled()");
 				gamepad.onDisconnectGamepad();

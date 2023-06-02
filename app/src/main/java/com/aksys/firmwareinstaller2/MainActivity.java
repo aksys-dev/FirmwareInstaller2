@@ -23,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate( savedInstanceState );
 		setContentView( R.layout.activity_main );
 		TextView view = findViewById(R.id.application_version);
-		view.setText(BuildConfig.VERSION_NAME);
+
+		//// 업데이트 날짜를 기재 하십시오.
+		view.setText(String.format("%s %s", BuildConfig.VERSION_NAME, "2023-06-01"));
 	}
 
 	ActivityResultLauncher<String> getPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {

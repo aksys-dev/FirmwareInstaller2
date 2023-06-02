@@ -339,7 +339,7 @@ public class GamepadInfo {
 			return null;
 		else {
 			stringBuffer.delete(stringBuffer.length() - 2, stringBuffer.length());
-			Log.i(TAG, "getTurboOption: " + Integer.toHexString(ObuttonTurbo) + " / " + stringBuffer.toString());
+			Log.i(TAG, "getTurboOption: " + Integer.toHexString(ObuttonTurbo) + " / " + stringBuffer);
 			return stringBuffer.toString();
 		}
 	}
@@ -500,7 +500,7 @@ public class GamepadInfo {
 				Log.i( TAG, String.format( "Call: Send Code %x ...", code ) );
 				outputStream.write( code );
 			} catch ( IOException e ) {
-				Log.w( TAG, "Call: Can't send message\n" + e.toString() );
+				Log.w( TAG, "Call: Can't send message\n" + e);
 				onDisconnectGamepad();
 				status = STATUS_NOT_CONNECT;
 				ConnectionFail();
@@ -512,7 +512,7 @@ public class GamepadInfo {
 				Log.i( TAG, String.format( "Call: Send Code %x ... (size: %d)", output[0], output.length ) );
 				outputStream.write( output );
 			} catch ( IOException e ) {
-				Log.w( TAG, "sendByteStream: Not Work\n" + e.toString() );
+				Log.w( TAG, "sendByteStream: Not Work\n" + e);
 				ConnectionFail();
 				return false;
 			}
@@ -645,7 +645,7 @@ public class GamepadInfo {
 					}
 				} catch ( IOException e ) {
 					interrupt();
-					Log.d( TAG, "run: disconnected\n" + e.toString() );
+					Log.d( TAG, "run: disconnected\n" + e);
 					onDisconnectGamepad();
 				}
 				SystemClock.sleep( 1 );
@@ -654,7 +654,7 @@ public class GamepadInfo {
 				inputStream.close();
 				outputStream.close();
 			} catch ( IOException e ) {
-				Log.d( TAG, "run: Stream close " + e.toString() );
+				Log.d( TAG, "run: Stream close " + e);
 			}
 		}
 		
