@@ -32,6 +32,7 @@
         <item>tG Medusa</item>
         <item>JGC100</item>
         <item>JioController</item>
+        <item>Jiocontroller</item>
     </string-array>
     <string-array name="checklist">
         <item>v2</item>
@@ -62,6 +63,7 @@
         <item>s3i</item>
         <item>s5i</item>
         <item>jgc100</item>
+        <item>jio</item>
         <item>jio</item>
     </string-array>
 </resources>
