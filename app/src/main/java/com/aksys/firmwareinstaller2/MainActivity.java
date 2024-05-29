@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 	final String TAG = "GamepadUtility";
 	View clickedView;
-
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
